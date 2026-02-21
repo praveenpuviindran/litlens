@@ -1,0 +1,322 @@
+[
+  {
+    "id": "c001", "label": true,
+    "intervention": "Aspirin", "outcome": "Cardiovascular mortality in primary prevention",
+    "title_a": "Aspirin in Primary Prevention: Benefits Outweigh Risks",
+    "abstract_a": "A meta-analysis of 12 RCTs (n=95,000) found that low-dose aspirin significantly reduced major cardiovascular events by 12% (HR 0.88, 95% CI 0.82-0.94) in primary prevention without established CVD, with only a modest increase in GI bleeding.",
+    "title_b": "Aspirin for Primary Prevention: Net Harm Exceeds Benefit",
+    "abstract_b": "Updated pooled analysis of 13 RCTs (n=164,000) demonstrates that aspirin confers no significant reduction in cardiovascular mortality (HR 0.97, 95% CI 0.91-1.03) in contemporary primary prevention settings, while significantly increasing major bleeding events by 46%."
+  },
+  {
+    "id": "c002", "label": true,
+    "intervention": "Vitamin D supplementation", "outcome": "Hip fracture reduction",
+    "title_a": "Vitamin D and Calcium Reduce Hip Fracture Risk in Elderly",
+    "abstract_a": "Randomised trial in 3,270 elderly women showed vitamin D3 1200 IU plus calcium 1200 mg daily reduced hip fracture incidence by 43% over 18 months (p<0.001) compared to placebo.",
+    "title_b": "Vitamin D Supplementation Does Not Prevent Hip Fractures",
+    "abstract_b": "Large pragmatic RCT (n=25,871) found that vitamin D3 2000 IU daily had no effect on fracture incidence including hip fractures (HR 1.02, 95% CI 0.93-1.11) over 5 years, even in those with low baseline 25-hydroxyvitamin D levels."
+  },
+  {
+    "id": "c003", "label": true,
+    "intervention": "Beta-blockers", "outcome": "Mortality in heart failure with preserved ejection fraction",
+    "title_a": "Beta-Blockers Improve Survival in HFpEF",
+    "abstract_a": "Retrospective cohort study (n=4,500) showed beta-blocker use was associated with a 24% reduction in all-cause mortality in heart failure with preserved ejection fraction (HR 0.76, 95% CI 0.68-0.85) after propensity score matching.",
+    "title_b": "No Mortality Benefit of Beta-Blockers in HFpEF: Prospective Analysis",
+    "abstract_b": "Prospective registry study (n=7,800) found no significant difference in mortality between beta-blocker users and non-users in HFpEF (HR 0.99, 95% CI 0.91-1.08), suggesting the observational benefit may reflect confounding by indication."
+  },
+  {
+    "id": "c004", "label": true,
+    "intervention": "Proton pump inhibitors", "outcome": "Community-acquired pneumonia risk",
+    "title_a": "PPI Use Associated with 34% Increased Pneumonia Risk",
+    "abstract_a": "Case-control study (n=364,683) demonstrated that current PPI use was associated with a 34% increased risk of community-acquired pneumonia (OR 1.34, 95% CI 1.28-1.42), with highest risk in new users.",
+    "title_b": "PPI Use Not Associated with Pneumonia After Adjusting for Confounders",
+    "abstract_b": "Self-controlled case series analysis controlling for time-invariant confounders found no significant association between PPI use and pneumonia risk (IRR 1.02, 95% CI 0.94-1.11), suggesting prior findings were due to confounding by frailty and comorbidity."
+  },
+  {
+    "id": "c005", "label": true,
+    "intervention": "Intensive glucose control", "outcome": "Mortality in ICU patients",
+    "title_a": "Tight Glycaemic Control Reduces ICU Mortality",
+    "abstract_a": "Single-centre RCT showed intensive insulin therapy targeting glucose 80-110 mg/dL reduced ICU mortality from 8.0% to 4.6% (p<0.04) in surgical ICU patients compared to conventional treatment.",
+    "title_b": "Intensive Glucose Control Increases Mortality in Medical ICU",
+    "abstract_b": "NICE-SUGAR multicentre RCT (n=6,104) found intensive glucose control (target 81-108 mg/dL) was associated with increased 90-day mortality compared to conventional control (27.5% vs 24.9%, OR 1.14, p=0.02), primarily due to severe hypoglycaemia."
+  },
+  {
+    "id": "c006", "label": true,
+    "intervention": "Early goal-directed therapy", "outcome": "Sepsis mortality",
+    "title_a": "Early Goal-Directed Therapy Reduces Sepsis Mortality by 16%",
+    "abstract_a": "Original ProCESS-predecessor trial demonstrated that EGDT reduced 28-day mortality from 46.5% to 30.5% (absolute reduction 16%, p<0.001) in patients with severe sepsis and septic shock.",
+    "title_b": "Three RCTs Show EGDT Provides No Benefit Over Standard Care in Sepsis",
+    "abstract_b": "Pooled analysis of ProCESS, ARISE, and ProMISe trials (n=3,723) showed EGDT did not significantly reduce 90-day mortality compared to usual care (24.9% vs 25.4%, RR 0.97, 95% CI 0.89-1.07) in contemporary ICU settings."
+  },
+  {
+    "id": "c007", "label": true,
+    "intervention": "Hormone replacement therapy", "outcome": "Cardiovascular events in menopausal women",
+    "title_a": "HRT Reduces Coronary Heart Disease Risk in Menopause",
+    "abstract_a": "Observational Nurses Health Study (n=48,000) found that postmenopausal HRT was associated with a 44% reduction in CHD risk (RR 0.56, 95% CI 0.40-0.80) compared to non-users over 10 years of follow-up.",
+    "title_b": "WHI RCT: HRT Increases Cardiovascular Events in Postmenopausal Women",
+    "abstract_b": "Women's Health Initiative RCT (n=16,608) found combined oestrogen-progestin therapy significantly increased coronary heart disease (HR 1.29, 95% CI 1.02-1.63) and stroke (HR 1.41, 95% CI 1.07-1.85) compared to placebo after 5.2 years."
+  },
+  {
+    "id": "c008", "label": true,
+    "intervention": "Arthroscopic surgery", "outcome": "Pain in knee osteoarthritis",
+    "title_a": "Arthroscopic Lavage Provides Meaningful Pain Relief in Knee OA",
+    "abstract_a": "RCT (n=180) found arthroscopic lavage and debridement provided significantly greater pain relief at 2 years than sham surgery in patients with knee osteoarthritis, with 60% achieving >30% pain reduction.",
+    "title_b": "Arthroscopic Surgery No Better than Sham for Knee OA Pain",
+    "abstract_b": "Landmark RCT (n=320) demonstrated that arthroscopic lavage and debridement were no better than placebo sham surgery for pain (mean difference -0.2 on VAS, 95% CI -0.9 to 0.5) or function in patients with knee osteoarthritis."
+  },
+  {
+    "id": "c009", "label": true,
+    "intervention": "Low-fat diet", "outcome": "Cardiovascular mortality",
+    "title_a": "Low-Fat Diet Reduces Cardiovascular Events Over 8 Years",
+    "abstract_a": "Women's Health Initiative dietary modification trial (n=48,835) found the low-fat dietary pattern reduced coronary heart disease risk by 10% (HR 0.91, 95% CI 0.83-1.01) over 8 years with a trend toward significance.",
+    "title_b": "Mediterranean Diet Superior to Low-Fat for Cardiovascular Protection",
+    "abstract_b": "PREDIMED trial (n=7,447) showed Mediterranean diet supplemented with olive oil reduced major cardiovascular events by 30% (HR 0.70, 95% CI 0.54-0.92) compared to low-fat advice, which produced no significant benefit."
+  },
+  {
+    "id": "c010", "label": true,
+    "intervention": "COX-2 inhibitors", "outcome": "Cardiovascular risk versus non-selective NSAIDs",
+    "title_a": "COX-2 Selective Inhibitors Have Similar Cardiovascular Risk to Naproxen",
+    "abstract_a": "PRECISION trial (n=24,081) found celecoxib was non-inferior to naproxen for cardiovascular safety (HR 0.90, 95% CI 0.71-1.15) and had significantly fewer GI events, supporting selective COX-2 inhibitor use.",
+    "title_b": "Rofecoxib Increases Myocardial Infarction Risk Versus Naproxen",
+    "abstract_b": "VIGOR trial (n=8,076) showed rofecoxib doubled the risk of myocardial infarction compared to naproxen (0.4% vs 0.1% per year, RR 5.00, 95% CI 1.68-20.13), leading to voluntary market withdrawal."
+  },
+  {
+    "id": "c011", "label": true,
+    "intervention": "Tight blood pressure control", "outcome": "Renal outcomes in CKD",
+    "title_a": "Intensive Blood Pressure Control Slows CKD Progression",
+    "abstract_a": "MDRD study demonstrated that lower blood pressure targets (MAP <92 mmHg) significantly slowed GFR decline in patients with proteinuria >1g/day compared to standard targets (mean difference 1.3 ml/min/year, p=0.01).",
+    "title_b": "SPRINT Shows No Renal Benefit of Intensive BP Control",
+    "abstract_b": "SPRINT trial (n=9,361) found intensive systolic BP target (<120 mmHg) was not superior to standard target (<140 mmHg) for slowing CKD progression (HR 0.90, 95% CI 0.77-1.05) and was associated with higher rates of acute kidney injury."
+  },
+  {
+    "id": "c012", "label": true,
+    "intervention": "Anticoagulation timing after stroke in atrial fibrillation", "outcome": "Recurrent stroke",
+    "title_a": "Early Anticoagulation (72h) Reduces Recurrent Embolism After AF Stroke",
+    "abstract_a": "Observational cohort (n=1,644) showed initiating anticoagulation within 72 hours of AF-related stroke reduced 30-day recurrent ischemic stroke by 52% (HR 0.48, 95% CI 0.31-0.74) compared to delayed initiation, without increasing haemorrhagic transformation.",
+    "title_b": "Early Anticoagulation Increases Haemorrhagic Transformation in Large Infarcts",
+    "abstract_b": "Randomised TIMING trial (n=888) found early anticoagulation was associated with significantly higher rates of haemorrhagic transformation (12% vs 6%, p=0.003) in patients with large cortical infarcts, with no net clinical benefit."
+  },
+  {
+    "id": "c013", "label": true,
+    "intervention": "Defibrillator implantation", "outcome": "Survival in non-ischaemic cardiomyopathy",
+    "title_a": "ICD Reduces All-Cause Mortality in Non-Ischaemic Cardiomyopathy",
+    "abstract_a": "DEFINITE trial (n=458) demonstrated implantable cardioverter-defibrillator significantly reduced all-cause mortality (HR 0.65, 95% CI 0.40-1.06, trend p=0.08) and sudden cardiac death (HR 0.20, p=0.006) in non-ischaemic cardiomyopathy.",
+    "title_b": "DANISH Trial: ICD Does Not Reduce Mortality in Non-Ischaemic DCM",
+    "abstract_b": "DANISH trial (n=1,116) found prophylactic ICD implantation did not significantly reduce all-cause mortality (HR 0.87, 95% CI 0.68-1.12, p=0.28) in non-ischaemic systolic heart failure in the era of cardiac resynchronisation therapy."
+  },
+  {
+    "id": "c014", "label": true,
+    "intervention": "Cognitive behavioral therapy", "outcome": "Insomnia treatment",
+    "title_a": "CBT-I Inferior to Zopiclone at 2 Weeks for Insomnia",
+    "abstract_a": "Short-term RCT (n=75) found zopiclone produced faster sleep improvement than CBT-I at 2 weeks (sleep efficiency 81% vs 65%, p<0.01), with patients reporting higher satisfaction with pharmacotherapy.",
+    "title_b": "CBT-I Produces Superior Long-Term Outcomes vs Pharmacotherapy for Insomnia",
+    "abstract_b": "RCT (n=75) with 6-month follow-up showed CBT-I produced significantly better sleep efficiency at 6 months (85% vs 73%, p<0.01) compared to zopiclone, with pharmacotherapy benefits not sustained after discontinuation."
+  },
+  {
+    "id": "c015", "label": true,
+    "intervention": "Corticosteroids", "outcome": "Survival in ARDS",
+    "title_a": "Methylprednisolone Reduces Mortality in Persistent ARDS",
+    "abstract_a": "Rescue methylprednisolone therapy in persistent ARDS (>7 days) reduced hospital mortality from 62% to 29% (p=0.03) and accelerated weaning from mechanical ventilation in an RCT of 24 patients.",
+    "title_b": "High-Dose Corticosteroids Increase Mortality in Late ARDS",
+    "abstract_b": "ARDS Network late steroid rescue trial (n=180) found methylprednisolone initiated after day 14 of ARDS was associated with a trend toward increased 60-day mortality (35% vs 29%, p=0.07) and significantly increased neuromuscular complications."
+  },
+  {
+    "id": "c016", "label": true,
+    "intervention": "Antidepressants", "outcome": "Pain reduction in fibromyalgia",
+    "title_a": "Duloxetine Significantly Reduces Fibromyalgia Pain Scores",
+    "abstract_a": "Pooled RCT analysis (n=1,411) showed duloxetine reduced Brief Pain Inventory average pain score by 1.8 points vs 0.9 for placebo (p<0.001), with 30% of patients achieving clinically meaningful response.",
+    "title_b": "Antidepressants Have Minimal Clinical Benefit for Fibromyalgia",
+    "abstract_b": "Cochrane systematic review (52 RCTs, n=7,893) concluded that while antidepressants show statistically significant pain reduction in fibromyalgia, the effect size (SMD -0.22) falls below the threshold for clinical meaningfulness."
+  },
+  {
+    "id": "c017", "label": true,
+    "intervention": "Mammography screening", "outcome": "Breast cancer mortality",
+    "title_a": "Annual Mammography Reduces Breast Cancer Mortality by 20%",
+    "abstract_a": "Swedish Two-County trial demonstrated that invitation to mammography screening reduced breast cancer mortality by 31% (RR 0.69, 95% CI 0.53-0.88) over 7 years with invitation-based analysis.",
+    "title_b": "Cochrane Review: Mammography Screening Has Minimal Effect on Mortality",
+    "abstract_b": "Cochrane systematic review of adequately randomised trials concluded mammography screening reduces breast cancer mortality by only 15% (RR 0.85, 95% CI 0.75-0.96) with absolute risk reduction of 0.05%, arguing overdiagnosis significantly outweighs modest mortality benefit."
+  },
+  {
+    "id": "c018", "label": true,
+    "intervention": "Antihypertensives in very elderly", "outcome": "Stroke and mortality",
+    "title_a": "Antihypertensive Treatment Reduces Stroke by 36% in Octogenarians",
+    "abstract_a": "HYVET trial (n=3,845, age ≥80) showed indapamide ± perindopril reduced fatal and non-fatal stroke by 30% (HR 0.70, 95% CI 0.49-1.01) and all-cause mortality by 21% (HR 0.79, p=0.02) compared to placebo.",
+    "title_b": "Low Blood Pressure in Elderly Associated with Higher Mortality",
+    "abstract_b": "Observational cohort (n=8,580, age >75) found J-curve relationship: systolic BP <120 mmHg was associated with 40% higher all-cause mortality (HR 1.40, 95% CI 1.19-1.64) compared to 130-140 mmHg, even after excluding patients with prior cardiovascular disease."
+  },
+  {
+    "id": "c019", "label": true,
+    "intervention": "Protein restriction", "outcome": "CKD progression",
+    "title_a": "Low-Protein Diet Slows GFR Decline in CKD",
+    "abstract_a": "MDRD Study found low-protein diet (0.58 g/kg/day) reduced GFR decline by 41% compared to usual protein intake in patients with moderate CKD (GFR 25-55 ml/min), with greatest benefit in those with proteinuria.",
+    "title_b": "Protein Restriction Provides No Benefit in Pre-Dialysis CKD",
+    "abstract_b": "Systematic review and meta-analysis (17 RCTs, n=1,919) found no significant difference in rate of GFR decline or need for dialysis between low-protein and standard protein diets in CKD (SMD 0.07, 95% CI -0.09 to 0.23), with concern for malnutrition."
+  },
+  {
+    "id": "c020", "label": true,
+    "intervention": "Physical activity intervention", "outcome": "Depression outcomes",
+    "title_a": "Aerobic Exercise as Effective as Antidepressants for Major Depression",
+    "abstract_a": "RCT (n=156) found aerobic exercise 3×/week was not significantly different from sertraline at 16 weeks for major depressive disorder remission rates (60% vs 69%, p=0.22), supporting exercise as a viable alternative.",
+    "title_b": "Exercise Shows Only Small Effect on Depression Compared to Control",
+    "abstract_b": "Cochrane meta-analysis (35 RCTs, n=1,356) after excluding poor-quality trials found exercise had only a small effect on depression vs control (SMD -0.39, 95% CI -0.61 to -0.18), substantially less than the large effects reported in individual RCTs."
+  },
+  {
+    "id": "c021", "label": false,
+    "intervention": "Metformin", "outcome": "HbA1c reduction in type 2 diabetes",
+    "title_a": "Metformin Reduces HbA1c by 1.5% in Newly Diagnosed T2DM",
+    "abstract_a": "Meta-analysis of 21 RCTs demonstrates metformin monotherapy reduces HbA1c by a mean of 1.5% from baseline in treatment-naive type 2 diabetes patients, confirming its position as first-line pharmacotherapy.",
+    "title_b": "Metformin Monotherapy Achieves HbA1c Target in 50% of T2DM Patients",
+    "abstract_b": "Long-term follow-up study (n=4,075, UKPDS) shows that while metformin effectively lowers HbA1c initially, glycaemic control deteriorates progressively with only 50% maintaining HbA1c <7% at 3 years, consistent with disease progression."
+  },
+  {
+    "id": "c022", "label": false,
+    "intervention": "Statins", "outcome": "LDL cholesterol reduction",
+    "title_a": "Atorvastatin 80mg Reduces LDL by 50% in Secondary Prevention",
+    "abstract_a": "TNT trial (n=10,001) confirmed high-dose atorvastatin (80mg) reduced LDL cholesterol by 50% from baseline, achieving mean LDL of 77 mg/dL versus 101 mg/dL with 10mg dose.",
+    "title_b": "Rosuvastatin 40mg Achieves Greater LDL Reduction than Atorvastatin 80mg",
+    "abstract_b": "Head-to-head comparison study (n=1,385) found rosuvastatin 40mg produced LDL reduction of 55% versus 50% for atorvastatin 80mg (p<0.001), with both agents demonstrating comparable safety profiles."
+  },
+  {
+    "id": "c023", "label": false,
+    "intervention": "Bariatric surgery", "outcome": "Type 2 diabetes remission",
+    "title_a": "Roux-en-Y Gastric Bypass Achieves T2DM Remission in 65% at 2 Years",
+    "abstract_a": "Prospective study (n=2,458) demonstrates Roux-en-Y gastric bypass achieved complete T2DM remission (HbA1c <6.0% without medication) in 65% of patients at 2 years, declining to 47% at 5 years.",
+    "title_b": "Sleeve Gastrectomy Achieves T2DM Remission in 55% at 2 Years",
+    "abstract_b": "Multicentre RCT (n=240) comparing procedures found sleeve gastrectomy achieved T2DM remission in 55% at 2 years, with the difference from RYGB (65%) not meeting statistical significance (p=0.08) due to sample size."
+  },
+  {
+    "id": "c024", "label": false,
+    "intervention": "Exercise", "outcome": "Cardiovascular mortality reduction",
+    "title_a": "Regular Aerobic Exercise Reduces Cardiovascular Mortality by 35%",
+    "abstract_a": "Prospective cohort study (n=44,452) found adults meeting physical activity guidelines had 35% lower cardiovascular mortality (HR 0.65, 95% CI 0.58-0.72) compared to sedentary individuals over 15 years of follow-up.",
+    "title_b": "150 Minutes Weekly Physical Activity Associated with 30% CVD Mortality Reduction",
+    "abstract_b": "Dose-response meta-analysis (15 cohort studies, n=833,149) found that 150 minutes per week of moderate activity was associated with 30% lower cardiovascular mortality, with diminishing returns above 300 minutes."
+  },
+  {
+    "id": "c025", "label": false,
+    "intervention": "ACE inhibitors", "outcome": "Mortality in systolic heart failure",
+    "title_a": "Enalapril Reduces Mortality by 16% in Mild-Moderate Heart Failure",
+    "abstract_a": "SOLVD treatment trial (n=2,569) showed enalapril reduced all-cause mortality by 16% (HR 0.84, 95% CI 0.74-0.95) in patients with EF ≤35% over 41 months compared to placebo.",
+    "title_b": "Ramipril Reduces Mortality by 23% in Post-MI Left Ventricular Dysfunction",
+    "abstract_b": "AIRE study (n=2,006) demonstrated ramipril reduced all-cause mortality by 27% (HR 0.73, 95% CI 0.60-0.89, p=0.002) in patients with clinical heart failure post-myocardial infarction, consistent with ACE inhibitor class effect."
+  },
+  {
+    "id": "c026", "label": false,
+    "intervention": "Cognitive training", "outcome": "Cognitive decline in MCI",
+    "title_a": "Computerised Cognitive Training Improves Memory in MCI",
+    "abstract_a": "RCT (n=128) found 8 weeks of computerised cognitive training produced significant improvements in verbal memory (d=0.42, p=0.02) and processing speed (d=0.38, p=0.04) in mild cognitive impairment compared to active control.",
+    "title_b": "Multidomain Cognitive Training Improves Executive Function in MCI Patients",
+    "abstract_b": "RCT (n=210) of multidomain cognitive training (memory, attention, executive function) found significant improvements in executive function composite scores (d=0.35, p=0.03) but not memory, in MCI over 12 weeks."
+  },
+  {
+    "id": "c027", "label": false,
+    "intervention": "Antibiotics", "outcome": "Community-acquired pneumonia resolution",
+    "title_a": "5-Day Course Azithromycin as Effective as 10-Day Amoxicillin for CAP",
+    "abstract_a": "Non-inferiority RCT (n=450) found 5-day azithromycin achieved clinical cure in 88% of mild-moderate CAP patients, not significantly different from 10-day amoxicillin (86%, p=0.54), with better tolerability.",
+    "title_b": "Beta-Lactam Plus Macrolide Combination Reduces CAP Mortality Compared to Monotherapy",
+    "abstract_b": "Retrospective cohort (n=3,203 hospitalised CAP patients) found beta-lactam plus macrolide combination reduced 30-day mortality by 26% (OR 0.74, 95% CI 0.60-0.92) compared to fluoroquinolone or beta-lactam monotherapy."
+  },
+  {
+    "id": "c028", "label": false,
+    "intervention": "Blood transfusion", "outcome": "Outcomes in critically ill patients with anaemia",
+    "title_a": "Liberal Transfusion Strategy No Better Than Restrictive at Hb 7g/dL in ICU",
+    "abstract_a": "TRICC trial (n=838) found 30-day mortality was similar between liberal (target Hb 10-12 g/dL) and restrictive (target Hb 7-9 g/dL) transfusion strategies (18.7% vs 23.3%, p=0.11) in critically ill patients.",
+    "title_b": "Restrictive Transfusion at Hb 7 g/dL is Safe and Reduces Transfusion Exposure",
+    "abstract_b": "TRISS trial (n=998) in septic shock confirmed restrictive transfusion threshold (Hb 7 g/dL) had similar 90-day mortality to liberal strategy (43% vs 45%, p=0.44) while significantly reducing blood product utilisation."
+  },
+  {
+    "id": "c029", "label": false,
+    "intervention": "CPAP therapy", "outcome": "Sleepiness and quality of life in OSAHS",
+    "title_a": "CPAP Significantly Improves Daytime Sleepiness in Severe OSAHS",
+    "abstract_a": "RCT (n=294, AHI>30/h) found CPAP reduced Epworth Sleepiness Scale score by 3.8 points (p<0.001) compared to sham CPAP, with improvements in quality of life and neurocognitive performance over 3 months.",
+    "title_b": "CPAP Reduces Epworth Score by 2.5 Points in Moderate-Severe Sleep Apnoea",
+    "abstract_b": "Meta-analysis (51 RCTs, n=4,888) found CPAP produced mean Epworth Sleepiness Scale reduction of 2.5 points (95% CI 2.0-3.0) compared to inactive controls, consistent across severity subgroups."
+  },
+  {
+    "id": "c030", "label": false,
+    "intervention": "Prostate-specific antigen screening", "outcome": "Prostate cancer detection",
+    "title_a": "PSA Screening Detects Early-Stage Prostate Cancer in 40% of Screened Men",
+    "abstract_a": "Community screening programme (n=22,000) found PSA testing (threshold ≥4 ng/mL) identified early-stage (T1-T2) prostate cancer in 2.2% of screened men aged 55-69, with 40% of detected cancers being clinically insignificant.",
+    "title_b": "ERSPC: PSA Screening Reduces Prostate Cancer Mortality by 20%",
+    "abstract_b": "European Randomised Study of Screening for Prostate Cancer (n=162,243) found PSA-based screening reduced prostate cancer specific mortality by 20% (RR 0.80, 95% CI 0.72-0.89) at 16-year follow-up, consistent with earlier reports."
+  },
+  {
+    "id": "c031", "label": false,
+    "intervention": "Omega-3 supplements", "outcome": "Triglyceride reduction",
+    "title_a": "EPA+DHA Reduces Fasting Triglycerides by 20-30% in Hypertriglyceridaemia",
+    "abstract_a": "Dose-response study (n=234) confirmed omega-3 fatty acids 3-4g/day reduced fasting triglycerides by 25-30% in patients with baseline TG 200-500 mg/dL after 12 weeks, with EPA providing slightly greater effect than DHA.",
+    "title_b": "Icosapentaenoic Acid Alone Reduces Triglycerides by 33% in Severe Hypertriglyceridaemia",
+    "abstract_b": "MARINE trial (n=229) found prescription icosapentaenoic acid (EPA only, 4g/day) reduced median triglycerides by 33.1% from baseline in severe hypertriglyceridaemia (TG >500 mg/dL) at 12 weeks."
+  },
+  {
+    "id": "c032", "label": false,
+    "intervention": "Immunotherapy", "outcome": "Progression-free survival in melanoma",
+    "title_a": "Pembrolizumab Improves 5-Year PFS in Advanced Melanoma",
+    "abstract_a": "KEYNOTE-006 5-year analysis (n=834) showed pembrolizumab achieved 5-year progression-free survival rate of 29% in advanced unresectable melanoma, substantially higher than historical chemotherapy benchmarks.",
+    "title_b": "Nivolumab Plus Ipilimumab Combination Superior to Nivolumab Monotherapy for PFS",
+    "abstract_b": "CheckMate 067 trial (n=945) demonstrated that nivolumab plus ipilimumab combination achieved 5-year PFS rate of 36% versus 29% for nivolumab alone and 8% for ipilimumab monotherapy in advanced melanoma."
+  },
+  {
+    "id": "c033", "label": false,
+    "intervention": "Corticosteroids", "outcome": "Treatment of acute asthma exacerbations",
+    "title_a": "Oral Prednisolone as Effective as IV Methylprednisolone for Acute Asthma",
+    "abstract_a": "RCT (n=208) in adult emergency asthma found oral prednisolone 40mg was non-inferior to IV methylprednisolone 125mg for achieving 50% improvement in FEV1 at 3 hours (68% vs 72%, p=0.47).",
+    "title_b": "Early Systemic Corticosteroids Reduce Hospital Admissions in Acute Asthma",
+    "abstract_b": "Systematic review (32 RCTs) confirmed systemic corticosteroids initiated within 1 hour of acute asthma presentation significantly reduce hospital admissions (RR 0.61, 95% CI 0.48-0.79) compared to placebo, regardless of route of administration."
+  },
+  {
+    "id": "c034", "label": false,
+    "intervention": "Lithium", "outcome": "Relapse prevention in bipolar disorder",
+    "title_a": "Lithium Reduces Manic Relapse Rate by 40% Over 2 Years",
+    "abstract_a": "Long-term RCT (n=312) showed lithium reduced manic episode recurrence by 40% (HR 0.60, 95% CI 0.44-0.81) compared to placebo over 24 months in euthymic bipolar I patients.",
+    "title_b": "Lithium Prevents Both Manic and Depressive Relapses in Bipolar Disorder",
+    "abstract_b": "BALANCE trial (n=463) confirmed lithium was superior to valproate for overall relapse prevention in bipolar I disorder (HR 0.71, p=0.024), with numerically greater effects on mania prevention than depression prevention."
+  },
+  {
+    "id": "c035", "label": false,
+    "intervention": "Hand hygiene intervention", "outcome": "Healthcare-associated infections",
+    "title_a": "Alcohol-Based Hand Rub Programme Reduces MRSA Rates by 43%",
+    "abstract_a": "Interrupted time series study across 8 ICUs showed introduction of alcohol-based hand rub dispensers increased compliance from 48% to 67% and was associated with a 43% reduction in MRSA transmission rates over 18 months.",
+    "title_b": "Multimodal Hand Hygiene Programme Reduces HAI Rate by 35% Hospital-Wide",
+    "abstract_b": "Before-after study in 1,800-bed hospital found WHO multimodal hand hygiene strategy implementation reduced overall healthcare-associated infection rate by 35% (p<0.001) over 3 years, with greatest impact in ICU settings."
+  },
+  {
+    "id": "c036", "label": false,
+    "intervention": "TNF inhibitors", "outcome": "Remission in Crohn's disease",
+    "title_a": "Infliximab Induces Remission in 48% of Refractory Crohn's Disease Patients",
+    "abstract_a": "ACCENT I trial (n=573) showed infliximab 5mg/kg induced clinical remission at week 30 in 39% and 45% of patients on 5mg/kg and 10mg/kg maintenance versus 21% on placebo (p<0.001) in Crohn's disease.",
+    "title_b": "Adalimumab Achieves Sustained Remission in 40% at 1 Year in Crohn's Disease",
+    "abstract_b": "CHARM trial (n=854) demonstrated adalimumab maintenance therapy achieved clinical remission in 40% at week 56 versus 17% placebo (p<0.001) in Crohn's disease, with consistent efficacy across disease locations."
+  },
+  {
+    "id": "c037", "label": false,
+    "intervention": "Anticoagulation", "outcome": "VTE prevention post total hip replacement",
+    "title_a": "Low Molecular Weight Heparin Reduces DVT After THR by 60%",
+    "abstract_a": "Meta-analysis (28 RCTs, n=7,300) found LMWH reduced total DVT incidence by 60% compared to no prophylaxis after total hip replacement, establishing it as standard care for VTE prevention.",
+    "title_b": "Rivaroxaban Non-Inferior to Enoxaparin for VTE Prevention After THR",
+    "abstract_b": "RECORD1 trial (n=4,541) showed rivaroxaban 10mg daily significantly reduced total VTE incidence versus enoxaparin 40mg after total hip replacement (1.1% vs 3.7%, p<0.001), meeting non-inferiority and superiority."
+  },
+  {
+    "id": "c038", "label": false,
+    "intervention": "Telehealth intervention", "outcome": "HbA1c control in T2DM",
+    "title_a": "Remote Monitoring Reduces HbA1c by 0.5% in T2DM Patients",
+    "abstract_a": "RCT (n=312) found telemonitoring with pharmacist intervention reduced HbA1c by 0.5% more than usual care (p=0.01) over 12 months in poorly controlled type 2 diabetes patients in rural settings.",
+    "title_b": "Smartphone App-Based T2DM Management Reduces HbA1c by 0.4% at 6 Months",
+    "abstract_b": "Randomised controlled trial (n=248) of a smartphone application with automated reminders and dietary tracking found 0.4% greater HbA1c reduction compared to usual care at 6 months (p=0.03) in type 2 diabetes patients."
+  },
+  {
+    "id": "c039", "label": false,
+    "intervention": "PCSK9 inhibitors", "outcome": "Cardiovascular event reduction",
+    "title_a": "Evolocumab Reduces Cardiovascular Events by 15% in Secondary Prevention",
+    "abstract_a": "FOURIER trial (n=27,564) demonstrated evolocumab reduced composite cardiovascular endpoint (cardiovascular death, MI, stroke, UA, revascularisation) by 15% (HR 0.85, 95% CI 0.79-0.92) over 2.2 years added to statin therapy.",
+    "title_b": "Alirocumab Reduces Major Adverse Cardiovascular Events by 15% Post-ACS",
+    "abstract_b": "ODYSSEY OUTCOMES trial (n=18,924) found alirocumab reduced major adverse cardiovascular events by 15% (HR 0.85, 95% CI 0.78-0.93) in patients with recent acute coronary syndrome, with greater absolute benefit in high-risk subgroups."
+  },
+  {
+    "id": "c040", "label": false,
+    "intervention": "Mindfulness meditation", "outcome": "Anxiety symptoms",
+    "title_a": "MBSR Reduces Generalised Anxiety Disorder Symptoms vs Waitlist Control",
+    "abstract_a": "RCT (n=93) found 8-week mindfulness-based stress reduction programme reduced GAD-7 scores by 4.3 points versus 1.1 in waitlist control (p<0.001), with response rate of 54% versus 19%.",
+    "title_b": "Mindfulness Meditation Reduces Anxiety with Effect Size Similar to CBT",
+    "abstract_b": "Meta-analysis (38 RCTs, n=3,536) found mindfulness-based interventions reduced anxiety symptoms with moderate effect size (SMD 0.63, 95% CI 0.53-0.73), comparable to CBT effect sizes reported in separate meta-analyses."
+  }
+]
