@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 import streamlit as st
 
-# ── Page config — must be first Streamlit call ────────────────────────────────
+# ── Page config  -  must be first Streamlit call ────────────────────────────────
 st.set_page_config(
     page_title="LitLens",
     page_icon="🔬",
@@ -143,7 +143,7 @@ def render_synthesis_card(synthesis: dict[str, Any]) -> None:
 
 # ── Pages ─────────────────────────────────────────────────────────────────────
 if page == "Search":
-    st.markdown("# 🔬 LitLens — Biomedical Literature Search")
+    st.markdown("# 🔬 LitLens  -  Biomedical Literature Search")
     st.markdown(
         "Enter a clinical or research question. LitLens searches PubMed and Semantic Scholar, "
         "deduplicates results, reranks with a cross-encoder, and synthesises the evidence."
@@ -176,7 +176,7 @@ if page == "Search":
         spinner_placeholder.empty()
 
         if result.get("cached"):
-            st.info("⚡ Result from cache — no API calls made.")
+            st.info("⚡ Result from cache  -  no API calls made.")
 
         # ── Synthesis ─────────────────────────────────────────────────────────
         synthesis = result.get("synthesis")

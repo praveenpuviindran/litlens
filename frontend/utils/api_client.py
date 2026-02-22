@@ -10,7 +10,7 @@ from backend.config import settings
 
 logger = structlog.get_logger(__name__)
 
-# 60-second timeout — synthesis can take up to 10 seconds; leave headroom.
+# 60-second timeout  -  synthesis can take up to 10 seconds; leave headroom.
 _TIMEOUT = httpx.Timeout(60.0)
 _RETRY_DELAY = 2.0
 
@@ -62,7 +62,7 @@ def search(
             with httpx.Client(timeout=_TIMEOUT) as client:
                 response = client.post(url, json=payload)
                 if response.status_code == 503 and attempt == 0:
-                    logger.warning("backend returned 503 — retrying after delay")
+                    logger.warning("backend returned 503  -  retrying after delay")
                     time.sleep(_RETRY_DELAY)
                     continue
                 response.raise_for_status()
@@ -70,12 +70,12 @@ def search(
         except (httpx.ConnectError, httpx.TimeoutException) as exc:
             last_error = exc
             if attempt == 0:
-                logger.warning("connection error — retrying", error=str(exc))
+                logger.warning("connection error  -  retrying", error=str(exc))
                 time.sleep(_RETRY_DELAY)
             else:
                 break
         except httpx.HTTPStatusError as exc:
-            raise RuntimeError(f"Backend error: {exc.response.status_code} — {exc.response.text}")
+            raise RuntimeError(f"Backend error: {exc.response.status_code}  -  {exc.response.text}")
 
     raise RuntimeError(f"Backend unreachable: {last_error}")
 

@@ -67,7 +67,7 @@ jobs:
           NCBI_EMAIL: test@test.com
           ENVIRONMENT: test
         run: |
-          pytest tests/test_eval_gate.py -v || echo "Eval history not found — skipping gate on first run"
+          pytest tests/test_eval_gate.py -v || echo "Eval history not found  -  skipping gate on first run"
 
   docker-build:
     runs-on: ubuntu-latest

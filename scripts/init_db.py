@@ -4,7 +4,7 @@ Run this against the Docker Compose postgres service before starting the backend
 
     python scripts/init_db.py
 
-It is safe to run multiple times — all operations are idempotent.
+It is safe to run multiple times  -  all operations are idempotent.
 """
 
 import asyncio

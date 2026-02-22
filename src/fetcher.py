@@ -196,7 +196,7 @@ def fetch_pubmed(query: str, max_results: int = 25) -> list[Paper]:
 def fetch_semantic_scholar(query: str, max_results: int = 25) -> list[Paper]:
     """Fetch papers from Semantic Scholar matching query.
 
-    No API key required — uses the free public search endpoint.
+    No API key required  -  uses the free public search endpoint.
 
     Args:
         query: Plain-text search query.

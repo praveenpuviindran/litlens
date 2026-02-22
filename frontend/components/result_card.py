@@ -1,4 +1,4 @@
-"""Result card component — renders a single paper in a collapsible expander."""
+"""Result card component  -  renders a single paper in a collapsible expander."""
 
 from typing import Any
 

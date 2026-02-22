@@ -49,14 +49,14 @@ async def get_db() -> AsyncSession:
 async def init_db() -> None:
     """Create tables, enable pgvector extension, and set up FTS trigger.
 
-    Called once at application startup. Safe to call multiple times — all
+    Called once at application startup. Safe to call multiple times  -  all
     statements use IF NOT EXISTS guards.
     """
     # Import models so SQLAlchemy registers them before create_all.
     from backend import models  # noqa: F401
 
     async with engine.begin() as conn:
-        # Enable pgvector — required before any VECTOR column can be created.
+        # Enable pgvector  -  required before any VECTOR column can be created.
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         logger.info("pgvector extension enabled")
 

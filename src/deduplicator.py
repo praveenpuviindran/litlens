@@ -53,7 +53,7 @@ def deduplicate(papers: list[Paper]) -> list[Paper]:
     Returns:
         Deduplicated list of Papers, all with non-empty abstracts.
     """
-    # Pass 1 — DOI exact match
+    # Pass 1  -  DOI exact match
     doi_map: dict[str, Paper] = {}
     no_doi: list[Paper] = []
     for p in papers:
@@ -67,7 +67,7 @@ def deduplicate(papers: list[Paper]) -> list[Paper]:
 
     after_pass1 = list(doi_map.values()) + no_doi
 
-    # Pass 2 — fuzzy title match
+    # Pass 2  -  fuzzy title match
     unique: list[Paper] = []
     for candidate in after_pass1:
         norm_c = _normalise(candidate.title)

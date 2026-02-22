@@ -42,7 +42,7 @@ def _load_model() -> None:
         logger.info("cross-encoder model loaded", model=RERANKER_MODEL)
     except Exception as exc:
         logger.warning(
-            "cross-encoder failed to load — will fall back to similarity ranking",
+            "cross-encoder failed to load  -  will fall back to similarity ranking",
             model=RERANKER_MODEL,
             error=str(exc),
         )
@@ -95,7 +95,7 @@ async def rerank(query: str, papers: list[Paper]) -> list[Paper]:
         await asyncio.to_thread(_load_model)
 
     if _cross_encoder is None:
-        logger.warning("reranker unavailable — returning top-k by original order")
+        logger.warning("reranker unavailable  -  returning top-k by original order")
         return papers[:TOP_K]
 
     abstracts = [p.abstract or "" for p in papers]

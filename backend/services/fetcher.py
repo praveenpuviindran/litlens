@@ -200,7 +200,7 @@ async def _pubmed_efetch(client: httpx.AsyncClient, ids: list[str]) -> list[Pape
     response = await client.get(f"{PUBMED_BASE}/efetch.fcgi", params=params)
 
     if response.status_code == 429:
-        logger.warning("pubmed rate limited — retrying with backoff")
+        logger.warning("pubmed rate limited  -  retrying with backoff")
         response.raise_for_status()  # triggers tenacity retry
 
     response.raise_for_status()
@@ -266,7 +266,7 @@ async def _s2_search(client: httpx.AsyncClient, query: str) -> list[Paper]:
     )
 
     if response.status_code == 429:
-        logger.warning("semantic scholar rate limited — retrying with backoff")
+        logger.warning("semantic scholar rate limited  -  retrying with backoff")
         response.raise_for_status()
 
     response.raise_for_status()

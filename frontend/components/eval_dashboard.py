@@ -1,4 +1,4 @@
-"""Eval dashboard component — displays metric history charts and latest scores."""
+"""Eval dashboard component  -  displays metric history charts and latest scores."""
 
 import json
 from pathlib import Path

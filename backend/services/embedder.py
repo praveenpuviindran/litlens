@@ -119,7 +119,7 @@ def _load_faiss_index() -> None:
     try:
         import faiss  # type: ignore[import]
     except ImportError:
-        logger.error("faiss-cpu is not installed — cannot use FAISS fallback")
+        logger.error("faiss-cpu is not installed  -  cannot use FAISS fallback")
         raise
 
     if FAISS_INDEX_PATH.exists():
@@ -214,7 +214,7 @@ async def retrieve_from_faiss(query_vector: list[float], top_k: int = 20) -> lis
         await asyncio.to_thread(_load_faiss_index)
 
     if _faiss_index.ntotal == 0:  # type: ignore[union-attr]
-        logger.warning("FAISS index is empty — no results to return")
+        logger.warning("FAISS index is empty  -  no results to return")
         return []
 
     q = np.array([query_vector], dtype=np.float32)

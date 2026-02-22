@@ -58,15 +58,15 @@ You are a biomedical research methodologist. Given two paper abstracts about a s
 determine if they reach conflicting conclusions.
 
 Return a JSON object with:
-- "contradicts": boolean — true only if the two papers make directly opposing empirical claims \
+- "contradicts": boolean  -  true only if the two papers make directly opposing empirical claims \
 about the same intervention and outcome in comparable populations.
-- "claim_a": string — the relevant claim from Paper A (or null if no contradiction).
-- "claim_b": string — the relevant claim from Paper B (or null if no contradiction).
-- "intervention": string — the intervention or exposure being compared (or null).
-- "outcome": string — the outcome measure where they disagree (or null).
-- "methodological_note": string — one sentence on why results might differ (study design, \
-population, dosage, follow-up period, etc.) — only if contradicts is true.
-- "confidence": float between 0 and 1 — your confidence that this is a genuine contradiction.
+- "claim_a": string  -  the relevant claim from Paper A (or null if no contradiction).
+- "claim_b": string  -  the relevant claim from Paper B (or null if no contradiction).
+- "intervention": string  -  the intervention or exposure being compared (or null).
+- "outcome": string  -  the outcome measure where they disagree (or null).
+- "methodological_note": string  -  one sentence on why results might differ (study design, \
+population, dosage, follow-up period, etc.)  -  only if contradicts is true.
+- "confidence": float between 0 and 1  -  your confidence that this is a genuine contradiction.
 
 Return only the JSON object.\
 """
@@ -240,7 +240,7 @@ async def detect_contradictions(papers: list[Paper]) -> list[ContradictionRespon
     for i in range(len(papers)):
         for j in range(i + 1, len(papers)):
             a, b = papers[i], papers[j]
-            # Skip pairs that share no MeSH terms — unlikely to have comparable claims.
+            # Skip pairs that share no MeSH terms  -  unlikely to have comparable claims.
             if not _papers_share_mesh(a, b):
                 continue
             tasks.append(_classify_pair(client, a, b))

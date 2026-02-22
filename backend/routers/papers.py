@@ -1,4 +1,4 @@
-"""Papers router — GET /papers."""
+"""Papers router  -  GET /papers."""
 
 import math
 

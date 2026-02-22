@@ -1,48 +1,44 @@
-# 🔬 LitLens — Biomedical Literature Intelligence Engine
+# LitLens - Biomedical Literature Intelligence Engine
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Community_Cloud-FF4B4B?logo=streamlit)
-![PubMed](https://img.shields.io/badge/Data-PubMed%20%2B%20Semantic%20Scholar-2E86AB)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![No API Key](https://img.shields.io/badge/API%20Keys-None%20Required-brightgreen)
+![No API Key](https://img.shields.io/badge/API_Keys-None_Required-brightgreen)
 
-**[▶ Live Demo](https://litlens.streamlit.app)** · Built by [Praveen Puviindran](https://github.com/praveenpuviindran)
+**[Live Demo](https://litlens.streamlit.app)** - Built by [Praveen Puviindran](https://github.com/praveenpuviindran)
+
+---
+
+## Overview
+
+LitLens is a biomedical literature intelligence engine that automates the retrieval,
+deduplication, ranking, and synthesis of research evidence from PubMed and Semantic Scholar.
+
+A researcher submits a natural-language clinical question. The system returns a structured
+evidence summary with a direct answer, cited key findings, detected contradictions between
+papers, and identified research gaps - in under 10 seconds, at no cost.
 
 ---
 
 ## What It Does
 
-LitLens is a biomedical literature intelligence engine. You type a clinical research question; it:
-
-1. Searches **PubMed** and **Semantic Scholar** simultaneously (up to 50 papers)
-2. **Deduplicates** results across both sources using DOI + fuzzy title matching
-3. **Reranks** papers by relevance to your query using BM25
-4. **Synthesises** the top 10 papers into structured key findings with citations
-5. **Flags contradictions** between papers that appear to reach opposing conclusions
-
-Everything runs free. No API key. No account. No database.
+1. Queries **PubMed** (NCBI E-utilities) and **Semantic Scholar** in parallel
+2. Deduplicates results across both sources using DOI matching and fuzzy title similarity
+3. Reranks papers by relevance to the query using Okapi BM25
+4. Synthesises the top 10 papers using TF-IDF extractive summarisation
+5. Detects contradictions between papers that reach opposing conclusions on the same topic
 
 ---
 
-## Deploy Your Own Copy in 3 Steps
+## Deploy Your Own Copy
 
-> **No API keys needed. No environment variables to set.**
+No API keys. No environment variables. No configuration.
 
-### Step 1 — Fork the repository
+1. Fork this repository on GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub
+3. Click **New app**, select this repo, set main file to `app.py`, click **Deploy**
 
-Click **Fork** on this GitHub page.
-
-### Step 2 — Go to Streamlit Community Cloud
-
-Visit [share.streamlit.io](https://share.streamlit.io) and sign in with your GitHub account (free).
-
-### Step 3 — Click "New app" and deploy
-
-- **Repository:** `your-username/litlens`
-- **Branch:** `main`
-- **Main file path:** `app.py`
-
-Click **Deploy**. That's it. Your app will be live in ~60 seconds.
+Live in approximately 60 seconds.
 
 ---
 
@@ -59,55 +55,68 @@ Open [http://localhost:8501](http://localhost:8501).
 
 ---
 
+## Tools and Technologies
+
+| Category | Technology |
+|----------|-----------|
+| Language | Python 3.11 |
+| Frontend | Streamlit |
+| Deployment | Streamlit Community Cloud |
+| Data retrieval | PubMed NCBI E-utilities, Semantic Scholar Graph API |
+| HTTP and parsing | `requests`, `lxml` |
+| Relevance ranking | `rank-bm25` (Okapi BM25) |
+| Evidence synthesis | `scikit-learn` (TF-IDF, cosine similarity) |
+| Deduplication | `rapidfuzz` (token sort ratio, threshold 85) |
+| Numerical operations | `numpy` |
+| Version control | Git, GitHub |
+
+---
+
 ## Architecture
 
 ```
-Your Question
-      │
-      ▼
-PubMed (NCBI)  +  Semantic Scholar     ← free public APIs, no key
-      │
-      ▼
-Deduplication (DOI exact + fuzzy title)  ← rapidfuzz
-      │
-      ▼
-BM25 Relevance Reranking               ← rank-bm25, top 10
-      │
-      ▼
-TF-IDF Evidence Synthesis              ← scikit-learn
-      │
-      ▼
-Contradiction Detection                ← directional signal heuristic
-      │
-      ▼
+User query
+    |
+    v
+PubMed (NCBI E-utilities)  +  Semantic Scholar   <- parallel, free, no key
+    |
+    v
+Deduplication
+  Pass 1: Exact DOI match
+  Pass 2: Fuzzy title match (rapidfuzz)
+    |
+    v
+BM25 Relevance Reranking  ->  Top 10 papers
+    |
+    v
+TF-IDF Extractive Synthesis
+  - Sentence scoring by cosine similarity to query
+  - Near-duplicate sentence removal
+  - Direct answer: highest-scoring sentence
+  - Supporting findings: next N sentences with citations
+    |
+    v
+Contradiction Detection
+  - MeSH term overlap check
+  - Directional signal comparison
+    |
+    v
 Streamlit UI
 ```
 
 ---
 
-## Why No LLM?
+## Design Decisions
 
-I deliberately built this without any paid LLM API. The synthesis is **extractive** — every sentence
-in the output is a real sentence from a real abstract, selected because it was most similar to your
-query by TF-IDF cosine similarity. No text is invented or hallucinated.
+**No paid APIs.** All NLP runs on open-source libraries. The synthesis is extractive -
+every output sentence is taken verbatim from a source abstract and cited by paper number.
+No text is generated or invented, ensuring every output sentence traces directly to a source paper.
 
-This makes LitLens:
-- **Free** — no API costs, ever
-- **Reproducible** — the same query always returns the same synthesis
-- **Traceable** — every finding has a [citation] pointing to its source paper
+**No database.** All retrieval is live and stateless. Results reflect the current state
+of PubMed and Semantic Scholar at the time of the query.
 
----
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Frontend | Streamlit |
-| Data retrieval | PubMed E-utilities + Semantic Scholar API |
-| Deduplication | rapidfuzz |
-| Reranking | rank-bm25 (Okapi BM25) |
-| Synthesis | scikit-learn TF-IDF |
-| Deployment | Streamlit Community Cloud |
+**No infrastructure cost.** Streamlit Community Cloud hosts the app for free. There are
+no servers, databases, or API subscriptions to maintain.
 
 ---
 
@@ -115,15 +124,15 @@ This makes LitLens:
 
 ```
 litlens/
-├── app.py              # Main Streamlit app (entry point)
+├── app.py              # Streamlit entry point
 ├── src/
 │   ├── fetcher.py      # PubMed + Semantic Scholar retrieval
 │   ├── deduplicator.py # DOI + fuzzy title deduplication
 │   ├── reranker.py     # BM25 relevance reranking
-│   └── synthesizer.py  # TF-IDF synthesis + contradiction detection
+│   └── synthesizer.py  # TF-IDF synthesis and contradiction detection
 ├── .streamlit/
-│   └── config.toml     # Streamlit theme
-├── requirements.txt    # Dependencies
+│   └── config.toml     # Theme configuration
+├── requirements.txt
 └── README.md
 ```
 
@@ -131,8 +140,8 @@ litlens/
 
 ## License
 
-MIT — use it, fork it, build on it.
+MIT
 
 ---
 
-*Built by Praveen Puviindran · [GitHub](https://github.com/praveenpuviindran) · [LinkedIn](https://linkedin.com/in/praveenpuviindran)*
+*Praveen Puviindran - [GitHub](https://github.com/praveenpuviindran) - [LinkedIn](https://linkedin.com/in/praveenpuviindran)*

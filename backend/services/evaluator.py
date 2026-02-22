@@ -27,10 +27,10 @@ Your task: for each claim in the consensus_statement and each key finding, deter
 it is directly supported by at least one of the provided abstracts.
 
 Return a JSON object:
-- "supported_claims": integer — number of claims directly supported by the abstracts.
-- "total_claims": integer — total number of distinct claims evaluated.
-- "faithfulness_score": float — supported_claims / total_claims (0.0 to 1.0).
-- "unsupported_claims": array of strings — claims not found in the abstracts.
+- "supported_claims": integer  -  number of claims directly supported by the abstracts.
+- "total_claims": integer  -  total number of distinct claims evaluated.
+- "faithfulness_score": float  -  supported_claims / total_claims (0.0 to 1.0).
+- "unsupported_claims": array of strings  -  claims not found in the abstracts.
 
 Return only the JSON object. No preamble.\
 """

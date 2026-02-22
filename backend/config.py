@@ -68,5 +68,5 @@ class Settings(BaseSettings):
         return lower
 
 
-# Module-level singleton — import this everywhere instead of constructing Settings() directly.
+# Module-level singleton  -  import this everywhere instead of constructing Settings() directly.
 settings = Settings()

@@ -1,4 +1,4 @@
-"""Contradiction panel component — displays detected contradictions between papers."""
+"""Contradiction panel component  -  displays detected contradictions between papers."""
 
 from typing import Any
 

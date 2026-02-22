@@ -20,7 +20,7 @@ logger = structlog.get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Application lifespan — runs startup and shutdown logic."""
+    """Application lifespan  -  runs startup and shutdown logic."""
     logger.info(
         "LitLens starting up",
         environment=settings.environment,
@@ -31,13 +31,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         await init_db()
     except Exception as exc:
-        logger.error("database init failed — continuing without DB", error=str(exc))
+        logger.error("database init failed  -  continuing without DB", error=str(exc))
 
     # Warm the cross-encoder reranker model into memory.
     try:
         await warm_reranker()
     except Exception as exc:
-        logger.warning("reranker warm-up failed — will retry on first request", error=str(exc))
+        logger.warning("reranker warm-up failed  -  will retry on first request", error=str(exc))
 
     logger.info("LitLens startup complete")
     yield
@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     title="LitLens API",
-    description="Biomedical Literature Intelligence Engine — RAG-powered search and synthesis.",
+    description="Biomedical Literature Intelligence Engine  -  RAG-powered search and synthesis.",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",

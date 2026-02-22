@@ -1,4 +1,4 @@
-"""Search router — POST /search."""
+"""Search router  -  POST /search."""
 
 import time
 import uuid
@@ -190,7 +190,7 @@ async def search(
         else:
             await _store_papers(list(zip(papers, vectors)), db)
     except Exception as exc:
-        logger.warning("storage step failed — continuing without persistence", error=str(exc))
+        logger.warning("storage step failed  -  continuing without persistence", error=str(exc))
 
     # ── Retrieval ─────────────────────────────────────────────────────────────
     try:
@@ -206,7 +206,7 @@ async def search(
                 year_from=body.year_from, year_to=body.year_to
             )
     except Exception as exc:
-        logger.warning("retrieval failed — using fetched papers directly", error=str(exc))
+        logger.warning("retrieval failed  -  using fetched papers directly", error=str(exc))
         candidate_papers = papers[:20]
 
     # ── Reranking ─────────────────────────────────────────────────────────────

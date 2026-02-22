@@ -1,4 +1,4 @@
-"""Health check router — GET /health."""
+"""Health check router  -  GET /health."""
 
 import structlog
 from fastapi import APIRouter
@@ -19,7 +19,7 @@ router = APIRouter(tags=["health"])
     summary="Liveness probe",
     description=(
         "Returns the operational status of the API, database, and OpenAI configuration. "
-        "Always returns HTTP 200 — status fields carry the health signal."
+        "Always returns HTTP 200  -  status fields carry the health signal."
     ),
 )
 async def health_check() -> HealthResponse:

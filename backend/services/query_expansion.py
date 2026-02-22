@@ -81,7 +81,7 @@ async def expand_query(raw_query: str) -> ExpandedQuery:
 
     except json.JSONDecodeError as exc:
         logger.warning(
-            "query expansion JSON parse failed — using raw query as fallback",
+            "query expansion JSON parse failed  -  using raw query as fallback",
             error=str(exc),
             raw_query=raw_query[:60],
         )
@@ -89,7 +89,7 @@ async def expand_query(raw_query: str) -> ExpandedQuery:
 
     except Exception as exc:
         logger.error(
-            "query expansion LLM call failed — using raw query as fallback",
+            "query expansion LLM call failed  -  using raw query as fallback",
             error=str(exc),
             raw_query=raw_query[:60],
         )

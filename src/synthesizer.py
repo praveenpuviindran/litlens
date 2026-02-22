@@ -4,11 +4,12 @@ Uses TF-IDF cosine similarity to score sentences from the retrieved abstracts
 against the user's query, then selects the most representative non-redundant
 sentences as key findings.
 
-This approach is used in production literature review tools where LLM API
-calls are not available or too expensive.
+The highest-scoring sentence becomes the direct answer at the top of the synthesis.
+All output sentences are taken verbatim from source abstracts and are citable.
 """
 
 import re
+import string
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -17,31 +18,42 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from src.fetcher import Paper
 
-# Keywords indicating positive / negative / uncertain findings.
-_POSITIVE_SIGNALS = {"reduced", "lower", "decrease", "improve", "benefit", "effective", "significant", "superior", "associated with reduced", "prevented", "protective"}
-_NEGATIVE_SIGNALS = {"increased", "higher", "worse", "harmful", "no benefit", "no significant", "not associated", "failed", "ineffective", "no difference"}
-_UNCERTAIN_SIGNALS = {"mixed", "unclear", "conflicting", "inconclusive", "further research", "limited evidence", "insufficient"}
+_POSITIVE_SIGNALS = {
+    "reduced", "lower", "decrease", "improve", "benefit", "effective",
+    "significant", "superior", "prevented", "protective", "associated with reduced",
+    "fewer", "less", "better", "successful", "favourable",
+}
+_NEGATIVE_SIGNALS = {
+    "increased", "higher", "worse", "harmful", "no benefit", "no significant",
+    "not associated", "failed", "ineffective", "no difference", "no effect",
+    "not superior", "no reduction", "did not",
+}
+_UNCERTAIN_SIGNALS = {
+    "mixed", "unclear", "conflicting", "inconclusive", "further research",
+    "limited evidence", "insufficient", "uncertain",
+}
 
 
 @dataclass
 class KeyFinding:
     """A single extracted key finding with its source paper index."""
     finding: str
-    citation: int  # 1-based index into the papers list
+    citation: int
 
 
 @dataclass
 class Synthesis:
-    """Structured evidence synthesis produced without any LLM."""
-    consensus_statement: str
+    """Structured evidence synthesis."""
+    direct_answer: str          # The single most query-relevant sentence, shown at top
+    consensus_statement: str    # Broader narrative summary
     key_findings: list[KeyFinding] = field(default_factory=list)
-    evidence_quality: str = "mixed"  # strong | moderate | weak | mixed
+    evidence_quality: str = "mixed"
     gaps: list[str] = field(default_factory=list)
     limitations: str = ""
 
 
 def _split_sentences(text: str) -> list[str]:
-    """Split text into sentences using a simple regex."""
+    """Split text into sentences using punctuation boundaries."""
     sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     return [s.strip() for s in sentences if len(s.strip()) > 40]
 
@@ -63,34 +75,27 @@ def _score_direction(text: str) -> str:
 
 def _evidence_quality(papers: list[Paper]) -> str:
     """Estimate evidence quality from study design keywords in abstracts."""
-    rct_signals = {"randomized", "randomised", "rct", "placebo", "double-blind", "controlled trial"}
-    meta_signals = {"meta-analysis", "systematic review", "cochrane"}
-    obs_signals = {"cohort", "observational", "retrospective", "case-control"}
-
     all_text = " ".join((p.abstract or "") for p in papers).lower()
-    if any(s in all_text for s in meta_signals):
+    if any(s in all_text for s in {"meta-analysis", "systematic review", "cochrane"}):
         return "strong"
-    if any(s in all_text for s in rct_signals):
+    if any(s in all_text for s in {"randomized", "randomised", "rct", "placebo", "controlled trial"}):
         return "moderate"
-    if any(s in all_text for s in obs_signals):
+    if any(s in all_text for s in {"cohort", "observational", "retrospective", "case-control"}):
         return "weak"
     return "mixed"
 
 
-def _deduplicate_sentences(sentences: list[str], threshold: float = 0.85) -> list[str]:
-    """Remove near-duplicate sentences using cosine similarity."""
+def _deduplicate_sentences(sentences: list[str], threshold: float = 0.82) -> list[str]:
+    """Remove near-duplicate sentences by cosine similarity."""
     if len(sentences) <= 1:
         return sentences
-
     try:
         vec = TfidfVectorizer(stop_words="english", min_df=1)
         tfidf = vec.fit_transform(sentences)
         sim = cosine_similarity(tfidf)
     except Exception:
         return sentences
-
-    keep = []
-    used = set()
+    keep, used = [], set()
     for i in range(len(sentences)):
         if i in used:
             continue
@@ -101,28 +106,58 @@ def _deduplicate_sentences(sentences: list[str], threshold: float = 0.85) -> lis
     return [sentences[i] for i in keep]
 
 
+def _build_direct_answer(best_sentence: str, query: str, direction: str, n: int) -> str:
+    """Construct a direct-answer sentence that leads with the finding.
+
+    Prepends a short framing clause to the best extracted sentence so the
+    answer reads as a direct response to the question rather than a generic
+    statement.
+
+    Args:
+        best_sentence: Highest TF-IDF scored sentence from abstracts.
+        query: Original user question.
+        direction: 'positive', 'negative', or 'mixed'.
+        n: Number of papers synthesised.
+
+    Returns:
+        A single string that directly answers the question.
+    """
+    # Strip trailing period to allow clean sentence joining
+    sentence = best_sentence.rstrip(".")
+
+    if direction == "positive":
+        framing = f"Based on {n} retrieved studies, the evidence supports a beneficial effect:"
+    elif direction == "negative":
+        framing = f"Based on {n} retrieved studies, the evidence does not support a significant benefit:"
+    else:
+        framing = f"Based on {n} retrieved studies, findings are mixed:"
+
+    return f"{framing} {sentence}."
+
+
 def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthesis:
     """Generate a structured evidence synthesis from the top papers.
 
-    Uses TF-IDF to extract the most query-relevant, non-redundant sentences
-    from the paper abstracts. No API calls required.
+    The highest TF-IDF scoring sentence becomes the direct answer shown at
+    the top. Supporting findings are the next highest-scoring non-redundant
+    sentences, each cited to their source paper.
 
     Args:
         query: The user's research question.
         papers: Top-ranked papers (typically 10).
-        max_findings: Maximum key findings to surface.
+        max_findings: Maximum key findings to surface (excluding direct answer).
 
     Returns:
-        A Synthesis object with consensus statement, key findings, and gaps.
+        A Synthesis object.
     """
     if not papers:
         return Synthesis(
-            consensus_statement="No papers were retrieved for this query. Try rephrasing your question.",
+            direct_answer="No papers were retrieved for this query. Try rephrasing your question.",
+            consensus_statement="No papers were retrieved.",
             evidence_quality="weak",
-            gaps=["Insufficient literature retrieved to synthesise."],
+            gaps=["Insufficient literature retrieved."],
         )
 
-    # Collect all sentences with their source paper index (1-based)
     all_sentences: list[tuple[str, int]] = []
     for i, paper in enumerate(papers, start=1):
         for sent in _split_sentences(paper.abstract or ""):
@@ -130,11 +165,12 @@ def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthe
 
     if not all_sentences:
         return Synthesis(
-            consensus_statement="Retrieved papers had insufficient abstract content for synthesis.",
+            direct_answer="Retrieved papers had insufficient abstract content for synthesis.",
+            consensus_statement="Retrieved papers had insufficient abstract content.",
             evidence_quality="weak",
         )
 
-    # Score all sentences against the query with TF-IDF cosine similarity
+    # Score all sentences against the query
     texts = [s for s, _ in all_sentences] + [query]
     try:
         vec = TfidfVectorizer(stop_words="english", min_df=1, ngram_range=(1, 2))
@@ -145,65 +181,63 @@ def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthe
     except Exception:
         scores = np.ones(len(all_sentences))
 
-    # Rank sentences by score
-    ranked = sorted(
-        range(len(all_sentences)),
-        key=lambda i: scores[i],
-        reverse=True,
-    )
+    ranked_indices = sorted(range(len(all_sentences)), key=lambda i: scores[i], reverse=True)
 
-    # Pick top sentences, deduplicate, and assign citations
-    raw_top = [all_sentences[i] for i in ranked[:max_findings * 3]]
-    raw_texts = [t for t, _ in raw_top]
-    deduped = _deduplicate_sentences(raw_texts)
+    # Best sentence becomes the direct answer
+    best_idx = ranked_indices[0]
+    best_sentence, best_paper_idx = all_sentences[best_idx]
 
-    key_findings: list[KeyFinding] = []
-    seen_texts = set()
-    for i, (sent, paper_idx) in enumerate(raw_top):
-        if sent in deduped and sent not in seen_texts:
-            key_findings.append(KeyFinding(finding=sent, citation=paper_idx))
-            seen_texts.add(sent)
-        if len(key_findings) >= max_findings:
-            break
-
-    # Consensus statement — aggregate direction across all abstracts
     combined_text = " ".join((p.abstract or "") for p in papers)
     direction = _score_direction(combined_text)
     n = len(papers)
+    quality = _evidence_quality(papers)
 
-    # Build the topic from the query (simple heuristic: first noun phrase / keywords)
+    direct_answer = _build_direct_answer(best_sentence, query, direction, n)
+
+    # Remaining top sentences become supporting findings
+    raw_top = [all_sentences[i] for i in ranked_indices[1: max_findings * 3 + 1]]
+    raw_texts = [t for t, _ in raw_top]
+    deduped = set(_deduplicate_sentences(raw_texts))
+
+    key_findings: list[KeyFinding] = []
+    seen = {best_sentence}
+    for sent, paper_idx in raw_top:
+        if sent in deduped and sent not in seen:
+            key_findings.append(KeyFinding(finding=sent, citation=paper_idx))
+            seen.add(sent)
+        if len(key_findings) >= max_findings:
+            break
+
+    # Consensus statement - broader narrative
     topic = query.rstrip("?").lower()
-    if len(topic) > 80:
-        topic = topic[:80] + "…"
+    if len(topic) > 90:
+        topic = topic[:90] + "..."
 
     if direction == "positive":
         consensus = (
-            f"Across {n} retrieved papers, the evidence broadly supports a beneficial effect "
-            f"related to: {topic}. Multiple studies report statistically significant findings, "
-            f"though effect sizes and populations vary."
+            f"The retrieved literature broadly supports a beneficial association related to: "
+            f"{topic}. Multiple studies report statistically significant findings, "
+            f"though effect sizes and study populations vary."
         )
     elif direction == "negative":
         consensus = (
-            f"Across {n} retrieved papers, the evidence is largely negative or null for "
-            f"the query: {topic}. Several studies report no significant benefit or potential harm."
+            f"The retrieved literature does not broadly support a significant benefit for: "
+            f"{topic}. Several studies report null results or potential adverse effects."
         )
     else:
         consensus = (
-            f"Across {n} retrieved papers, findings are mixed regarding: {topic}. "
-            f"Some studies report beneficial effects while others find no significant association, "
-            f"reflecting heterogeneity in study design, population, and outcomes measured."
+            f"Findings are mixed across the retrieved literature for: {topic}. "
+            f"Some studies report beneficial effects while others find no significant "
+            f"association, reflecting heterogeneity in study design, population, and outcome measurement."
         )
 
-    # Quality estimate
-    quality = _evidence_quality(papers)
-
-    # Identify research gaps (simple heuristics)
+    # Research gaps
     gap_signals = {
         "long-term": "Long-term outcomes and durability of effects remain understudied.",
-        "pediatric": "Evidence in paediatric and adolescent populations is limited.",
-        "diverse": "Most studies are conducted in predominantly Western/European populations; generalisability may be limited.",
-        "mechanism": "The underlying biological mechanisms are not fully elucidated.",
-        "cost": "Cost-effectiveness and real-world implementation have not been well characterised.",
+        "pediatric": "Evidence in paediatric populations is limited.",
+        "diverse": "Most studies use predominantly Western populations; external validity may be limited.",
+        "mechanism": "Underlying biological mechanisms are not fully characterised.",
+        "cost": "Cost-effectiveness data are sparse.",
     }
     gaps = []
     combined_lower = combined_text.lower()
@@ -212,11 +246,11 @@ def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthe
             gaps.append(gap_text)
     if not gaps:
         gaps = [
-            "Longer follow-up studies are needed to assess durability of effects.",
+            "Longer follow-up studies are needed.",
             "Head-to-head comparisons between interventions are limited.",
         ]
 
-    # Limitations note
+    # Limitations
     study_types = []
     if "randomized" in combined_lower or "randomised" in combined_lower:
         study_types.append("RCTs")
@@ -225,13 +259,13 @@ def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthe
     if "meta-analysis" in combined_lower:
         study_types.append("meta-analyses")
     limitations = (
-        f"This synthesis is based on {n} papers retrieved from PubMed and Semantic Scholar "
-        f"({'including ' + ', '.join(study_types) if study_types else 'with mixed study designs'}). "
-        "Extractive summarisation is used — results represent the most query-relevant sentences "
-        "from the abstracts rather than a full expert narrative review."
+        f"Synthesis based on {n} papers from PubMed and Semantic Scholar "
+        f"({'including ' + ', '.join(study_types) if study_types else 'mixed study designs'}). "
+        "All output sentences are extracted verbatim from source abstracts and cited by paper number."
     )
 
     return Synthesis(
+        direct_answer=direct_answer,
         consensus_statement=consensus,
         key_findings=key_findings,
         evidence_quality=quality,
@@ -241,10 +275,7 @@ def synthesise(query: str, papers: list[Paper], max_findings: int = 6) -> Synthe
 
 
 def detect_contradictions(papers: list[Paper]) -> list[dict]:
-    """Detect potential contradictions using simple direction-signal analysis.
-
-    Flags pairs of papers where one shows positive signals and the other shows
-    negative signals on the same topic. This is a heuristic, not LLM-based.
+    """Flag pairs of papers with opposing directional signals on the same MeSH topic.
 
     Args:
         papers: Top-ranked papers.
@@ -256,15 +287,14 @@ def detect_contradictions(papers: list[Paper]) -> list[dict]:
     for i in range(len(papers)):
         for j in range(i + 1, len(papers)):
             a, b = papers[i], papers[j]
-
-            # Only compare papers sharing a MeSH term (same topic)
-            shared_mesh = set(t.lower() for t in (a.mesh_terms or [])) & set(t.lower() for t in (b.mesh_terms or []))
+            shared_mesh = (
+                set(t.lower() for t in (a.mesh_terms or []))
+                & set(t.lower() for t in (b.mesh_terms or []))
+            )
             if not shared_mesh:
                 continue
-
             dir_a = _score_direction(a.abstract or "")
             dir_b = _score_direction(b.abstract or "")
-
             if (dir_a == "positive" and dir_b == "negative") or (dir_a == "negative" and dir_b == "positive"):
                 contradictions.append({
                     "paper_a_title": a.title,
@@ -273,9 +303,8 @@ def detect_contradictions(papers: list[Paper]) -> list[dict]:
                     "direction_b": dir_b,
                     "shared_topic": list(shared_mesh)[0].title(),
                     "note": (
-                        "These papers appear to reach opposite conclusions on the same topic. "
-                        "Differences may reflect study design, population, dose, or follow-up duration."
+                        "These papers appear to reach opposing conclusions on the same topic. "
+                        "Differences may reflect study design, population, dosage, or follow-up duration."
                     ),
                 })
-
     return contradictions
