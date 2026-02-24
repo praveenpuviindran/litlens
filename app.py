@@ -8,6 +8,16 @@ import time
 
 import streamlit as st
 
+
+@st.cache_resource(show_spinner="Loading semantic model...")
+def _load_encoder():
+    """Load sentence-transformers encoder once and cache across sessions."""
+    try:
+        from sentence_transformers import SentenceTransformer
+        return SentenceTransformer("all-MiniLM-L6-v2")
+    except Exception:
+        return None
+
 st.set_page_config(
     page_title="LitLens | Biomedical Literature Search",
     page_icon="",
@@ -127,6 +137,18 @@ if page == "Search":
 
         query = query.strip()
 
+        from src.synthesizer import _detect_intent
+        intent = _detect_intent(query)
+        if intent == "term":
+            st.info(
+                "Tip: For a more targeted synthesis, phrase your input as a clinical question. "
+                'Example: "What are the main causes of heavy menstrual bleeding?" or '
+                '"Do tranexamic acid reduce heavy menstrual bleeding?" '
+                "Proceeding with your search term below."
+            )
+
+        encoder = _load_encoder()
+
         progress = st.progress(0, text="Searching PubMed and Semantic Scholar...")
         t_start = time.time()
 
@@ -141,10 +163,10 @@ if page == "Search":
         papers = deduplicate(raw_papers)
         progress.progress(55, text=f"{len(papers)} unique papers. Ranking by relevance...")
 
-        top_papers = rerank(query, papers, top_k=10)
+        top_papers = rerank(query, papers, top_k=10, encoder=encoder)
         progress.progress(75, text="Synthesising evidence...")
 
-        synthesis = synthesise(query, top_papers)
+        synthesis = synthesise(query, top_papers, encoder=encoder)
         contradictions = detect_contradictions(top_papers)
         progress.progress(100, text="Complete.")
         time.sleep(0.3)
@@ -293,14 +315,15 @@ Semantic Scholar simultaneously, fetching up to 50 candidate papers.
 DOI matching, then fuzzy title similarity via rapidfuzz token sort ratio (threshold: 85).
 The richer abstract is retained; sources are merged into a single record.
 
-<span class="step-badge">3</span>**Relevance reranking** - scores each abstract against the query
-using Okapi BM25, a probabilistic term-weighting function widely used in production search
-infrastructure, and returns the top 10 papers.
+<span class="step-badge">3</span>**Relevance reranking** - encodes each abstract and the query using a
+sentence-transformers model (all-MiniLM-L6-v2), then combines semantic cosine similarity
+(65%) with Okapi BM25 lexical scoring (35%) to return the top 10 papers.
 
-<span class="step-badge">4</span>**Evidence synthesis** - splits abstracts into sentences,
-scores each against the query using TF-IDF cosine similarity, deduplicates near-identical
-sentences, and selects the top results as cited key findings. The highest-scoring sentence
-becomes the direct answer at the top.
+<span class="step-badge">4</span>**Evidence synthesis** - detects the query intent (intervention question,
+descriptive question, or search term), scores each abstract sentence semantically against
+the query, deduplicates near-identical sentences, and selects the top results as cited key
+findings. Framing adapts to the query type: intervention questions receive directional evidence
+framing; descriptive queries and search terms receive an informative literature summary.
 
 <span class="step-badge">5</span>**Contradiction detection** - for each pair of papers sharing
 a MeSH term, compares directional signals in the abstracts. Pairs where one paper reports
@@ -323,8 +346,9 @@ a positive effect and the other a negative effect on the same topic are flagged 
 - `requests`, `lxml` for HTTP and XML parsing
 
 **Text Processing and NLP**
-- `scikit-learn` - TF-IDF vectorisation and cosine similarity
-- `rank-bm25` - Okapi BM25 relevance ranking
+- `sentence-transformers` - semantic sentence embeddings (all-MiniLM-L6-v2)
+- `scikit-learn` - TF-IDF vectorisation, cosine similarity, fallback scoring
+- `rank-bm25` - Okapi BM25 lexical relevance ranking
 - `rapidfuzz` - fuzzy string matching for deduplication
 - `numpy` - numerical operations
         """)
@@ -372,7 +396,13 @@ elif page == "How It Works":
 Your Question
       |
       v
-PubMed (NCBI E-utilities)  +  Semantic Scholar
+Query Intent Detection
+  - Intervention: "Does X reduce Y?"
+  - Descriptive:  "What causes Y?"
+  - Term:         "heavy menstrual bleeding"
+      |
+      v
+PubMed (NCBI E-utilities)  +  Semantic Scholar  (parallel, free)
       |
       v
 Deduplication
@@ -380,12 +410,15 @@ Deduplication
   Pass 2: Fuzzy title match (rapidfuzz, threshold 85)
       |
       v
-BM25 Relevance Reranking  ->  Top 10 papers
+Semantic Reranking  ->  Top 10 papers
+  65% sentence-transformers cosine similarity
+  35% Okapi BM25 lexical score
       |
       v
-TF-IDF Evidence Synthesis
-  - Sentence scoring by cosine similarity to query
+Semantic Evidence Synthesis
+  - Sentence scoring via sentence-transformers embeddings
   - Near-duplicate sentence removal
+  - Intent-aware framing (intervention vs. descriptive vs. term)
   - Highest-scoring sentence as direct answer
   - Remaining top sentences as cited key findings
       |
@@ -426,12 +459,17 @@ can surface specific papers.
     with st.expander("How is the synthesis generated?"):
         st.markdown("""
 The synthesis is extractive. Every sentence in the output is taken directly from one
-of the retrieved abstracts, selected because it scored highest on TF-IDF cosine
-similarity against your query.
+of the retrieved abstracts.
 
-The direct answer at the top is the single highest-scoring sentence across all
-top 10 abstracts. The supporting findings below it are the next highest-scoring
-non-redundant sentences, each labelled with the paper number they came from.
+Sentences are scored using semantic similarity: the query and all abstract sentences
+are encoded as dense vectors using a sentence-transformers model (all-MiniLM-L6-v2),
+and sentences are ranked by cosine similarity to the query vector.
+
+The query intent is detected before synthesis. If the query is an intervention question
+("Does X reduce Y?"), the synthesis applies directional framing based on the overall
+signal across the abstracts. If the query is descriptive or a search term, the synthesis
+presents the most informative sentences as a literature overview without applying
+intervention-specific framing.
 
 No new text is generated. Every output sentence is traceable to a specific source paper.
         """)
