@@ -11,6 +11,28 @@ from xml.etree import ElementTree as ET
 
 import requests
 
+# Words that add no retrieval value when sent to PubMed or Semantic Scholar
+_SEARCH_STOPWORDS = {
+    "what", "how", "why", "does", "do", "is", "are", "can", "should",
+    "will", "would", "which", "when", "where", "who", "the", "of",
+    "on", "in", "with", "for", "a", "an", "to", "and", "or", "not",
+    "effect", "effects", "impact", "role", "association", "relationship",
+    "between", "among", "there", "any", "some", "their",
+}
+
+
+def _build_search_query(query: str) -> str:
+    """Strip question and stop words to extract core medical search terms.
+
+    PubMed ESearch performs better with concise term-based queries than with
+    full natural-language questions. For example:
+      "what is the effect of aspirin on platelet reactivity"
+      -> "aspirin platelet reactivity"
+    """
+    words = query.lower().rstrip("?").split()
+    key_terms = [w for w in words if w not in _SEARCH_STOPWORDS and len(w) > 2]
+    return " ".join(key_terms) if key_terms else query
+
 # Generic contact email satisfies NCBI's "strongly recommended" policy
 # without requiring the user to provide one.
 NCBI_EMAIL = "research@litlens.app"
@@ -166,13 +188,13 @@ def fetch_pubmed(query: str, max_results: int = 25) -> list[Paper]:
     """Fetch papers from PubMed matching query.
 
     Args:
-        query: Search string (plain text or MeSH syntax).
+        query: Search string (plain text, natural language, or MeSH syntax).
         max_results: Maximum number of papers to fetch.
 
     Returns:
         List of Paper objects with abstracts.
     """
-    ids = _pubmed_esearch(query, max_results)
+    ids = _pubmed_esearch(_build_search_query(query), max_results)
     if not ids:
         return []
     time.sleep(0.35)  # Respect 3 req/sec free-tier limit
@@ -208,7 +230,7 @@ def fetch_semantic_scholar(query: str, max_results: int = 25) -> list[Paper]:
     try:
         resp = requests.get(
             S2_SEARCH_URL,
-            params={"query": query, "limit": max_results, "fields": S2_FIELDS},
+            params={"query": _build_search_query(query), "limit": max_results, "fields": S2_FIELDS},
             timeout=TIMEOUT,
         )
         resp.raise_for_status()
