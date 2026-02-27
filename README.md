@@ -144,4 +144,4 @@ MIT
 
 ---
 
-*Praveen Puviindran - [GitHub](https://github.com/praveenpuviindran) - [LinkedIn](https://linkedin.com/in/praveenpuviindran)*
+*Praveen Puviindran - [GitHub](https://github.com/praveenpuviindran) - [LinkedIn](https://www.linkedin.com/in/praveen-puviindran-218998220) - [Website](https://praveenpuviindran.github.io/)*

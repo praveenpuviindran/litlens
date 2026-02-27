@@ -101,7 +101,7 @@ All processing uses open-source libraries.
     st.markdown("""
 Built by **Praveen Puviindran**
 
-[GitHub](https://github.com/praveenpuviindran) · [LinkedIn](https://linkedin.com/in/praveenpuviindran)
+[GitHub](https://github.com/praveenpuviindran) · [LinkedIn](https://www.linkedin.com/in/praveen-puviindran-218998220) · [Website](https://praveenpuviindran.github.io/)
     """)
 
 
@@ -381,7 +381,8 @@ demonstrates my ability to design and ship a full-stack data pipeline from retri
 through synthesis, deployed as a production web application.
 
 - GitHub: [github.com/praveenpuviindran](https://github.com/praveenpuviindran)
-- LinkedIn: [linkedin.com/in/praveenpuviindran](https://linkedin.com/in/praveenpuviindran)
+- LinkedIn: [linkedin.com/in/praveen-puviindran-218998220](https://www.linkedin.com/in/praveen-puviindran-218998220)
+- Website: [praveenpuviindran.github.io](https://praveenpuviindran.github.io/)
     """)
     st.markdown("</div>", unsafe_allow_html=True)
 
