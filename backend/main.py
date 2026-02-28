@@ -96,3 +96,4 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 app.include_router(health.router)
 app.include_router(search.router)
 app.include_router(papers.router)
+
