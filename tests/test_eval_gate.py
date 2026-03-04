@@ -56,3 +56,4 @@ class TestEvalGate:
         assert score >= THRESHOLDS["retrieval_precision"], (
             f"Retrieval precision {score:.3f} is below threshold {THRESHOLDS['retrieval_precision']}"
         )
+
