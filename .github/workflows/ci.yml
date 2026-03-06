@@ -81,3 +81,4 @@ jobs:
 
       - name: Build frontend image
         run: docker build -f Dockerfile.frontend -t litlens-frontend .
+
