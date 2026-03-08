@@ -28,9 +28,22 @@ def _build_search_query(query: str) -> str:
     full natural-language questions. For example:
       "what is the effect of aspirin on platelet reactivity"
       -> "aspirin platelet reactivity"
+
+    Single uppercase characters (T, B, NK) are preserved as they often denote
+    biomedical abbreviations (T cell, B cell, NK cell). Other single-char or
+    very short words are filtered.
     """
-    words = query.lower().rstrip("?").split()
-    key_terms = [w for w in words if w not in _SEARCH_STOPWORDS and len(w) > 2]
+    original_words = query.rstrip("?").split()
+    key_terms = []
+    for orig in original_words:
+        lower = orig.lower()
+        if lower in _SEARCH_STOPWORDS:
+            continue
+        # Preserve uppercase abbreviations like T, B, NK, IL, TNF regardless of length
+        if orig.isupper() or (len(orig) >= 2 and orig[0].isupper() and any(c.isdigit() for c in orig)):
+            key_terms.append(orig)
+        elif len(lower) > 2:
+            key_terms.append(lower)
     return " ".join(key_terms) if key_terms else query
 
 # Generic contact email satisfies NCBI's "strongly recommended" policy

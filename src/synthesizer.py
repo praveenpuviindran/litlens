@@ -1,8 +1,18 @@
-"""Extractive evidence synthesizer with semantic sentence scoring.
+"""Extractive evidence synthesizer with entity-anchored semantic sentence scoring.
 
-Uses sentence-transformers (all-MiniLM-L6-v2) when available for semantic
-similarity, with TF-IDF cosine similarity as a fallback. No API calls.
-Zero cost.
+Uses sentence-transformers (all-MiniLM-L6-v2) for semantic similarity combined
+with entity-overlap scoring and Maximal Marginal Relevance (MMR) to select
+diverse, on-topic sentences. Falls back to TF-IDF cosine similarity. No API
+calls. Zero cost.
+
+Pipeline per query:
+  1. Extract key biomedical entities from the query.
+  2. Score every abstract sentence by:
+       0.60 * semantic_similarity + 0.30 * entity_overlap + 0.10 * stats_bonus
+  3. Apply a relevance threshold - if the best score is too low, flag the
+     synthesis as potentially off-topic.
+  4. Use MMR to pick diverse, non-redundant key findings.
+  5. Build a direct answer and consensus from the actual top sentences.
 
 Query intent is detected to apply appropriate framing:
   - intervention: "Does X reduce Y?" -> explicit directional verdict
@@ -16,10 +26,13 @@ import re
 from dataclasses import dataclass, field
 
 import numpy as np
+from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from src.fetcher import Paper
+
+# ── Signal lexicons ────────────────────────────────────────────────────────────
 
 _POSITIVE_SIGNALS = {
     "reduced", "lower", "decrease", "improve", "benefit", "effective",
@@ -35,6 +48,8 @@ _UNCERTAIN_SIGNALS = {
     "mixed", "unclear", "conflicting", "inconclusive", "further research",
     "limited evidence", "insufficient", "uncertain",
 }
+
+# ── Intent detection ───────────────────────────────────────────────────────────
 
 _INTERVENTION_PHRASES = [
     "effect of", "effects of", " vs ", "versus", "compared to",
@@ -52,12 +67,38 @@ _DESCRIPTIVE_STARTERS = {
     "is", "are", "explain", "describe",
 }
 
+# ── Entity extraction helpers ──────────────────────────────────────────────────
+
+_ENTITY_STOPWORDS = {
+    "the", "a", "an", "of", "in", "on", "with", "for", "to", "and",
+    "or", "not", "is", "are", "does", "do", "can", "how", "what",
+    "why", "when", "where", "who", "which", "effect", "effects", "impact",
+    "role", "association", "between", "among", "there", "any", "some",
+    "their", "this", "that", "these", "those", "than", "from", "by",
+    "at", "as", "be", "was", "were", "been", "has", "have", "had",
+    "its", "it", "we", "our", "they", "them", "us",
+}
+
+# ── Statistics patterns ────────────────────────────────────────────────────────
+
+_STATS_PATTERNS = [
+    re.compile(r'p\s*[<>=]\s*0\.\d+', re.IGNORECASE),
+    re.compile(r'\d+(?:\.\d+)?\s*%'),
+    re.compile(r'(?:OR|RR|HR)\s*[=:]\s*\d', re.IGNORECASE),
+    re.compile(r'(?:hazard ratio|odds ratio|relative risk)\s*[=:]\s*\d', re.IGNORECASE),
+    re.compile(r'\d+(?:\.\d+)?-fold', re.IGNORECASE),
+    re.compile(r'95\s*%\s*CI', re.IGNORECASE),
+]
+
+
+# ── Data classes ───────────────────────────────────────────────────────────────
 
 @dataclass
 class KeyFinding:
     """A single extracted key finding with its source paper index."""
     finding: str
     citation: int
+    has_statistics: bool = False
 
 
 @dataclass
@@ -71,7 +112,10 @@ class Synthesis:
     volume_score: float = 0.5
     gaps: list[str] = field(default_factory=list)
     limitations: str = ""
+    relevance_confidence: float = 1.0
 
+
+# ── Intent detection ───────────────────────────────────────────────────────────
 
 def _detect_intent(query: str) -> str:
     """Classify query as 'intervention', 'descriptive', or 'term'."""
@@ -91,10 +135,14 @@ def _detect_intent(query: str) -> str:
     return "term"
 
 
+# ── Sentence splitting ─────────────────────────────────────────────────────────
+
 def _split_sentences(text: str) -> list[str]:
     sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     return [s.strip() for s in sentences if len(s.strip()) > 40]
 
+
+# ── Directional scoring ────────────────────────────────────────────────────────
 
 def _score_direction(text: str) -> str:
     lower = text.lower()
@@ -110,6 +158,8 @@ def _score_direction(text: str) -> str:
     return "mixed"
 
 
+# ── Evidence quality ───────────────────────────────────────────────────────────
+
 def _evidence_quality(papers: list[Paper]) -> str:
     all_text = " ".join((p.abstract or "") for p in papers).lower()
     if any(s in all_text for s in {"meta-analysis", "systematic review", "cochrane"}):
@@ -120,6 +170,8 @@ def _evidence_quality(papers: list[Paper]) -> str:
         return "weak"
     return "mixed"
 
+
+# ── Research volume ────────────────────────────────────────────────────────────
 
 def _compute_research_volume(unique_count: int, quality: str) -> tuple[str, float]:
     """Return a label and 0-1 score representing how well-researched the topic is."""
@@ -151,13 +203,239 @@ def _compute_research_volume(unique_count: int, quality: str) -> tuple[str, floa
     return label, score
 
 
+# ── Entity extraction ──────────────────────────────────────────────────────────
+
+def _extract_key_entities(query: str) -> set[str]:
+    """Extract meaningful biomedical entities from query.
+
+    Captures uppercase abbreviations (GADS, TNF, T, B, NK), multi-word
+    biomedical terms, and non-stopword content words. Single uppercase
+    characters are kept because they frequently denote cell types (T cell,
+    B cell) or loci.
+    """
+    entities: set[str] = set()
+
+    # Uppercase tokens including single-char (T, B) and alphanumeric (SGLT2, IL-6)
+    for match in re.finditer(r'\b[A-Z][A-Z0-9_-]*\b', query):
+        word = match.group()
+        entities.add(word)
+        entities.add(word.lower())
+
+    # Content words longer than 2 chars
+    for w in re.findall(r'\b\w+\b', query.lower()):
+        if w not in _ENTITY_STOPWORDS and len(w) > 2:
+            entities.add(w)
+
+    # Bigrams (captures "T cell", "GADS KO", "B cell")
+    tokens = re.findall(r'\b\w+\b', query)
+    for i in range(len(tokens) - 1):
+        pair = f"{tokens[i].lower()} {tokens[i+1].lower()}"
+        if (tokens[i].lower() not in _ENTITY_STOPWORDS
+                or tokens[i+1].lower() not in _ENTITY_STOPWORDS):
+            entities.add(pair)
+
+    return entities
+
+
+def _entity_overlap_score(sentence: str, entities: set[str]) -> float:
+    """Score how many query entities appear in the sentence (0 to 1)."""
+    if not entities:
+        return 0.0
+    sent_lower = sentence.lower()
+    matches = sum(1 for e in entities if e in sent_lower)
+    return min(1.0, matches / len(entities))
+
+
+# ── Statistics detection ───────────────────────────────────────────────────────
+
+def _has_statistics(sentence: str) -> bool:
+    """Check if sentence contains quantitative statistics."""
+    return any(p.search(sentence) for p in _STATS_PATTERNS)
+
+
+# ── Semantic scoring ───────────────────────────────────────────────────────────
+
+def _score_sentences_semantic(sentences: list[str], query: str, encoder=None) -> np.ndarray:
+    """Score sentences against query via semantic similarity, falling back to TF-IDF."""
+    if encoder is not None:
+        try:
+            all_texts = sentences + [query]
+            embeddings = encoder.encode(all_texts, show_progress_bar=False, batch_size=64)
+            query_emb = embeddings[-1:]
+            sent_embs = embeddings[:-1]
+            return cosine_similarity(query_emb, sent_embs)[0]
+        except Exception:
+            pass
+
+    texts = sentences + [query]
+    try:
+        vec = TfidfVectorizer(stop_words="english", min_df=1, ngram_range=(1, 2))
+        tfidf = vec.fit_transform(texts)
+        return cosine_similarity(tfidf[-1], tfidf[:-1])[0]
+    except Exception:
+        return np.ones(len(sentences))
+
+
+def _score_sentences(
+    sentences: list[str],
+    query: str,
+    entities: set[str],
+    encoder=None,
+) -> np.ndarray:
+    """Combined sentence scorer: semantic + entity overlap + statistics bonus.
+
+    Weights:
+      60% semantic similarity (transformer or TF-IDF)
+      30% entity overlap    (prevents topic drift, e.g. GADS vs GADs)
+      10% statistics bonus  (boosts quantitative findings)
+    """
+    sem = _score_sentences_semantic(sentences, query, encoder)
+
+    entity_arr = np.array([_entity_overlap_score(s, entities) for s in sentences])
+    stats_arr = np.array([0.1 if _has_statistics(s) else 0.0 for s in sentences])
+
+    return 0.60 * sem + 0.30 * entity_arr + stats_arr
+
+
+# ── Maximal Marginal Relevance ─────────────────────────────────────────────────
+
+def _mmr_select(
+    scores: np.ndarray,
+    sentences: list[str],
+    n: int,
+    lambda_param: float = 0.7,
+    encoder=None,
+) -> list[int]:
+    """Select n diverse, relevant sentences using Maximal Marginal Relevance.
+
+    lambda_param controls relevance-diversity trade-off:
+      1.0 = pure relevance ranking, 0.0 = pure diversity.
+    """
+    if len(sentences) <= n:
+        return list(range(len(sentences)))
+
+    # Build similarity matrix for diversity measurement
+    try:
+        if encoder is not None:
+            embs = encoder.encode(sentences, show_progress_bar=False, batch_size=64)
+            sim_matrix = cosine_similarity(embs)
+        else:
+            vec = TfidfVectorizer(stop_words="english", min_df=1)
+            tfidf = vec.fit_transform(sentences)
+            sim_matrix = cosine_similarity(tfidf)
+    except Exception:
+        # Fall back to plain score ranking
+        return sorted(range(len(sentences)), key=lambda i: scores[i], reverse=True)[:n]
+
+    selected: list[int] = []
+    candidates = list(range(len(sentences)))
+
+    while len(selected) < n and candidates:
+        if not selected:
+            best = max(candidates, key=lambda i: scores[i])
+        else:
+            def _mmr(i: int) -> float:
+                rel = scores[i]
+                redundancy = max(sim_matrix[i, j] for j in selected)
+                return lambda_param * rel - (1.0 - lambda_param) * redundancy
+            best = max(candidates, key=_mmr)
+
+        selected.append(best)
+        candidates.remove(best)
+
+    return selected
+
+
+# ── Deduplication ──────────────────────────────────────────────────────────────
+
+def _deduplicate_sentences(sentences: list[str], threshold: float = 0.82) -> list[str]:
+    if len(sentences) <= 1:
+        return sentences
+    try:
+        vec = TfidfVectorizer(stop_words="english", min_df=1)
+        tfidf = vec.fit_transform(sentences)
+        sim = cosine_similarity(tfidf)
+    except Exception:
+        return sentences
+    keep, used = [], set()
+    for i in range(len(sentences)):
+        if i in used:
+            continue
+        keep.append(i)
+        for j in range(i + 1, len(sentences)):
+            if sim[i, j] >= threshold:
+                used.add(j)
+    return [sentences[i] for i in keep]
+
+
+# ── Cluster-diverse sentence pool ──────────────────────────────────────────────
+
+def _cluster_diverse_pool(
+    scored_sentences: list[tuple[str, int, float]],
+    n_clusters: int = 5,
+    pool_size: int = 30,
+    encoder=None,
+) -> list[tuple[str, int, float]]:
+    """Use KMeans clustering to build a topically diverse candidate pool.
+
+    Instead of taking the top-N sentences globally (which may all come from
+    one cluster of papers), we pick the best sentence from each semantic
+    cluster to ensure broad coverage.
+    """
+    if len(scored_sentences) <= pool_size:
+        return scored_sentences
+
+    texts = [s for s, _, _ in scored_sentences]
+    try:
+        if encoder is not None:
+            embs = encoder.encode(texts, show_progress_bar=False, batch_size=64)
+        else:
+            vec = TfidfVectorizer(stop_words="english", min_df=1)
+            embs = vec.fit_transform(texts).toarray()
+
+        k = min(n_clusters, len(texts))
+        km = KMeans(n_clusters=k, random_state=42, n_init=10)
+        labels = km.fit_predict(embs)
+
+        # From each cluster take the top-scoring sentences
+        cluster_to_items: dict[int, list[tuple[str, int, float]]] = {}
+        for idx, (sent, paper_idx, score) in enumerate(scored_sentences):
+            c = labels[idx]
+            cluster_to_items.setdefault(c, []).append((sent, paper_idx, score))
+
+        diverse_pool: list[tuple[str, int, float]] = []
+        # Round-robin across clusters, picking highest-score each round
+        cluster_lists = [
+            sorted(v, key=lambda x: x[2], reverse=True)
+            for v in cluster_to_items.values()
+        ]
+        pointer = [0] * len(cluster_lists)
+        while len(diverse_pool) < pool_size:
+            advanced = False
+            for ci, lst in enumerate(cluster_lists):
+                if pointer[ci] < len(lst):
+                    diverse_pool.append(lst[pointer[ci]])
+                    pointer[ci] += 1
+                    advanced = True
+            if not advanced:
+                break
+        return diverse_pool
+
+    except Exception:
+        return scored_sentences[:pool_size]
+
+
+# ── Direct answer builder ──────────────────────────────────────────────────────
+
 def _smart_lowercase(sent: str) -> str:
     """Lowercase the first character unless it starts with an acronym."""
     if not sent:
         return sent
     first_word = sent.split()[0] if sent.split() else ""
-    # Keep capitalisation if first word is an acronym (e.g. SGLT2, mRNA, TNF)
-    if len(first_word) >= 2 and (first_word.isupper() or first_word[0].isupper() and any(c.isdigit() for c in first_word)):
+    if len(first_word) >= 2 and (
+        first_word.isupper()
+        or (first_word[0].isupper() and any(c.isdigit() for c in first_word))
+    ):
         return sent
     return sent[0].lower() + sent[1:]
 
@@ -168,17 +446,24 @@ def _build_direct_answer(
     quality: str,
     best_sentence: str,
     unique_count: int,
+    relevance_confidence: float,
 ) -> str:
     """Build an explicit, verdict-first direct answer.
 
     Mirrors the style of a concise literature verdict: clearly states what
     the research shows, scaled to the quality and direction of the evidence.
-    When research is sparse, explicitly flags that.
+    When research is sparse or relevance is low, explicitly flags that.
     """
     sent = best_sentence.rstrip(".")
     sent_lc = _smart_lowercase(sent)
 
-    # Flag insufficient research
+    if relevance_confidence < 0.25:
+        return (
+            "The retrieved papers may not directly address this specific query. "
+            f"The closest available evidence suggests that {sent_lc}. "
+            "Consider rephrasing with more specific terminology."
+        )
+
     if unique_count < 5:
         return (
             f"There is currently limited published research on this specific topic. "
@@ -208,7 +493,6 @@ def _build_direct_answer(
             else:
                 prefix = "Research findings are currently mixed; available evidence suggests that"
     else:
-        # Descriptive or search term
         if quality == "strong":
             prefix = "Systematic evidence demonstrates that"
         elif quality == "moderate":
@@ -221,6 +505,8 @@ def _build_direct_answer(
     return f"{prefix} {sent_lc}."
 
 
+# ── Consensus builder ──────────────────────────────────────────────────────────
+
 def _build_consensus(
     intent: str,
     direction: str,
@@ -229,8 +515,9 @@ def _build_consensus(
     top_sentences: list[tuple[str, int]],
     n: int,
     unique_count: int,
+    relevance_confidence: float,
 ) -> str:
-    """Build a broader narrative context paragraph."""
+    """Build a broader narrative context paragraph from actual top sentences."""
     additional = [s for s, _ in top_sentences[1:4]]
 
     if unique_count < 5:
@@ -242,72 +529,26 @@ def _build_consensus(
             base += " ".join(s if s.endswith(".") else s + "." for s in additional[:2])
         return base
 
-    if intent == "intervention":
-        if direction == "positive":
-            context = (
-                f"Across {n} retrieved papers, the evidence broadly supports a beneficial association. "
-                "Multiple studies report statistically significant findings, though effect sizes, "
-                "populations, and follow-up durations vary."
-            )
-        elif direction == "negative":
-            context = (
-                f"Across {n} retrieved papers, the evidence does not consistently support a significant benefit. "
-                "Several studies report null results or raise concerns about adverse effects."
-            )
-        else:
-            context = (
-                f"Across {n} retrieved papers, evidence is mixed. Some studies report significant effects "
-                "while others do not, likely reflecting heterogeneity in study design, population, "
-                "intervention dosage, and outcome measurement."
-            )
-        return context
+    if relevance_confidence < 0.25:
+        if additional:
+            return " ".join(s if s.endswith(".") else s + "." for s in additional[:2])
+        return f"Limited directly relevant content was found for '{topic}'."
 
-    # Descriptive / term: stitch together the next most informative sentences
     if additional:
-        return " ".join(s if s.endswith(".") else s + "." for s in additional)
+        parts = []
+        for s in additional:
+            s_clean = s.strip()
+            if s_clean and not s_clean.endswith("."):
+                s_clean += "."
+            if s_clean:
+                parts.append(s_clean)
+        if parts:
+            return " ".join(parts)
+
     return f"The retrieved literature covers multiple aspects of {topic}."
 
 
-def _score_sentences(sentences: list[str], query: str, encoder=None) -> np.ndarray:
-    """Score sentences against query via semantic similarity, falling back to TF-IDF."""
-    if encoder is not None:
-        try:
-            all_texts = sentences + [query]
-            embeddings = encoder.encode(all_texts, show_progress_bar=False, batch_size=64)
-            query_emb = embeddings[-1:]
-            sent_embs = embeddings[:-1]
-            return cosine_similarity(query_emb, sent_embs)[0]
-        except Exception:
-            pass
-
-    texts = sentences + [query]
-    try:
-        vec = TfidfVectorizer(stop_words="english", min_df=1, ngram_range=(1, 2))
-        tfidf = vec.fit_transform(texts)
-        return cosine_similarity(tfidf[-1], tfidf[:-1])[0]
-    except Exception:
-        return np.ones(len(sentences))
-
-
-def _deduplicate_sentences(sentences: list[str], threshold: float = 0.82) -> list[str]:
-    if len(sentences) <= 1:
-        return sentences
-    try:
-        vec = TfidfVectorizer(stop_words="english", min_df=1)
-        tfidf = vec.fit_transform(sentences)
-        sim = cosine_similarity(tfidf)
-    except Exception:
-        return sentences
-    keep, used = [], set()
-    for i in range(len(sentences)):
-        if i in used:
-            continue
-        keep.append(i)
-        for j in range(i + 1, len(sentences)):
-            if sim[i, j] >= threshold:
-                used.add(j)
-    return [sentences[i] for i in keep]
-
+# ── Main synthesis entry point ─────────────────────────────────────────────────
 
 def synthesise(
     query: str,
@@ -339,7 +580,11 @@ def synthesise(
             research_volume="Limited Research",
             volume_score=0.05,
             gaps=["Insufficient literature retrieved."],
+            relevance_confidence=0.0,
         )
+
+    # Extract entities from query for entity-anchored scoring
+    entities = _extract_key_entities(query)
 
     all_sentences: list[tuple[str, int]] = []
     for i, paper in enumerate(papers, start=1):
@@ -353,48 +598,97 @@ def synthesise(
             evidence_quality="weak",
             research_volume="Limited Research",
             volume_score=0.05,
+            relevance_confidence=0.0,
         )
 
     texts = [s for s, _ in all_sentences]
-    scores = _score_sentences(texts, query, encoder=encoder)
-    ranked_indices = sorted(range(len(all_sentences)), key=lambda i: scores[i], reverse=True)
+    raw_scores = _score_sentences(texts, query, entities, encoder=encoder)
+
+    # Relevance confidence: normalise max score against a calibrated ceiling
+    max_raw = float(raw_scores.max())
+    relevance_confidence = min(1.0, max_raw / 0.55)
+
+    # Build a cluster-diverse candidate pool then apply MMR
+    scored_triples = [
+        (texts[i], all_sentences[i][1], float(raw_scores[i]))
+        for i in range(len(all_sentences))
+    ]
+    # Sort by score descending for initial pool
+    scored_triples.sort(key=lambda x: x[2], reverse=True)
+
+    # Use KMeans clustering to get a diverse candidate pool
+    diverse_pool = _cluster_diverse_pool(
+        scored_triples, n_clusters=5, pool_size=40, encoder=encoder
+    )
+
+    # Re-extract sentences and scores from pool (preserving paper indices)
+    pool_texts = [s for s, _, _ in diverse_pool]
+    pool_paper_indices = [pi for _, pi, _ in diverse_pool]
+    pool_scores = np.array([sc for _, _, sc in diverse_pool])
+
+    # Exact-match deduplicate the pool
+    seen_exact: set[str] = set()
+    deduped_pool_texts: list[str] = []
+    deduped_paper_indices: list[int] = []
+    deduped_scores_list: list[float] = []
+    for t, pi, sc in zip(pool_texts, pool_paper_indices, pool_scores):
+        if t not in seen_exact:
+            deduped_pool_texts.append(t)
+            deduped_paper_indices.append(pi)
+            deduped_scores_list.append(sc)
+            seen_exact.add(t)
+
+    deduped_scores = np.array(deduped_scores_list)
+
+    # Apply MMR to select diverse, relevant sentences
+    mmr_indices = _mmr_select(
+        deduped_scores,
+        deduped_pool_texts,
+        n=max_findings + 4,
+        lambda_param=0.7,
+        encoder=encoder,
+    )
+
+    top_sentences: list[tuple[str, int]] = [
+        (deduped_pool_texts[i], deduped_paper_indices[i])
+        for i in mmr_indices
+    ]
+
+    if not top_sentences:
+        top_sentences = [(deduped_pool_texts[0], deduped_paper_indices[0])]
+
+    best_sentence, _ = top_sentences[0]
 
     intent = _detect_intent(query)
     combined_text = " ".join((p.abstract or "") for p in papers)
     direction = _score_direction(combined_text)
     n = len(papers)
     quality = _evidence_quality(papers)
-
     volume_label, volume_score = _compute_research_volume(unique_count, quality)
 
     topic = query.rstrip("?").strip()
     if len(topic) > 80:
         topic = topic[:80] + "..."
 
-    # Collect top diverse sentences (exact-match deduplicated)
-    top_sentences: list[tuple[str, int]] = []
-    seen_text: set[str] = set()
-    for idx in ranked_indices:
-        sent, paper_idx = all_sentences[idx]
-        if sent not in seen_text:
-            top_sentences.append((sent, paper_idx))
-            seen_text.add(sent)
-        if len(top_sentences) >= max_findings + 4:
-            break
+    direct_answer = _build_direct_answer(
+        intent, direction, quality, best_sentence, unique_count, relevance_confidence
+    )
+    consensus_statement = _build_consensus(
+        intent, direction, quality, topic, top_sentences, n, unique_count, relevance_confidence
+    )
 
-    best_sentence, _ = top_sentences[0]
-
-    direct_answer = _build_direct_answer(intent, direction, quality, best_sentence, unique_count)
-    consensus_statement = _build_consensus(intent, direction, quality, topic, top_sentences, n, unique_count)
-
-    # Key findings: next highest-scoring non-redundant sentences
-    raw_texts = [s for s, _ in top_sentences[1: max_findings * 3 + 1]]
-    deduped = set(_deduplicate_sentences(raw_texts))
+    # Key findings: MMR-selected, near-duplicate filtered
+    raw_finding_texts = [s for s, _ in top_sentences[1: max_findings * 3 + 1]]
+    deduped_finding_texts = set(_deduplicate_sentences(raw_finding_texts))
     key_findings: list[KeyFinding] = []
     seen_findings = {best_sentence}
     for sent, paper_idx in top_sentences[1:]:
-        if sent in deduped and sent not in seen_findings:
-            key_findings.append(KeyFinding(finding=sent, citation=paper_idx))
+        if sent in deduped_finding_texts and sent not in seen_findings:
+            key_findings.append(KeyFinding(
+                finding=sent,
+                citation=paper_idx,
+                has_statistics=_has_statistics(sent),
+            ))
             seen_findings.add(sent)
         if len(key_findings) >= max_findings:
             break
@@ -441,8 +735,11 @@ def synthesise(
         volume_score=volume_score,
         gaps=gaps,
         limitations=limitations,
+        relevance_confidence=relevance_confidence,
     )
 
+
+# ── Contradiction detection ────────────────────────────────────────────────────
 
 def detect_contradictions(papers: list[Paper]) -> list[dict]:
     """Flag pairs of papers with opposing directional signals on the same MeSH topic."""
