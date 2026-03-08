@@ -5,9 +5,9 @@ similarity, with TF-IDF cosine similarity as a fallback. No API calls.
 Zero cost.
 
 Query intent is detected to apply appropriate framing:
-  - intervention: "Does X reduce Y?" -> directional evidence framing
-  - descriptive:  "What causes Y?"   -> informative summary
-  - term:         "heavy menstrual bleeding" -> literature overview
+  - intervention: "Does X reduce Y?" -> explicit directional verdict
+  - descriptive:  "What causes Y?"   -> explicit literature finding
+  - term:         "telomere biology"  -> literature overview
 
 All output sentences are extracted verbatim from source abstracts.
 """
@@ -67,6 +67,8 @@ class Synthesis:
     consensus_statement: str
     key_findings: list[KeyFinding] = field(default_factory=list)
     evidence_quality: str = "mixed"
+    research_volume: str = "Moderately Researched"
+    volume_score: float = 0.5
     gaps: list[str] = field(default_factory=list)
     limitations: str = ""
 
@@ -119,6 +121,153 @@ def _evidence_quality(papers: list[Paper]) -> str:
     return "mixed"
 
 
+def _compute_research_volume(unique_count: int, quality: str) -> tuple[str, float]:
+    """Return a label and 0-1 score representing how well-researched the topic is."""
+    if unique_count >= 28:
+        score = 1.0
+    elif unique_count >= 20:
+        score = 0.82
+    elif unique_count >= 12:
+        score = 0.62
+    elif unique_count >= 6:
+        score = 0.42
+    elif unique_count >= 2:
+        score = 0.22
+    else:
+        score = 0.08
+
+    quality_boost = {"strong": 0.12, "moderate": 0.06, "weak": 0.0, "mixed": 0.0}
+    score = min(1.0, score + quality_boost.get(quality, 0.0))
+
+    if score >= 0.75:
+        label = "Extensively Researched"
+    elif score >= 0.50:
+        label = "Well Researched"
+    elif score >= 0.28:
+        label = "Moderately Researched"
+    else:
+        label = "Limited Research"
+
+    return label, score
+
+
+def _smart_lowercase(sent: str) -> str:
+    """Lowercase the first character unless it starts with an acronym."""
+    if not sent:
+        return sent
+    first_word = sent.split()[0] if sent.split() else ""
+    # Keep capitalisation if first word is an acronym (e.g. SGLT2, mRNA, TNF)
+    if len(first_word) >= 2 and (first_word.isupper() or first_word[0].isupper() and any(c.isdigit() for c in first_word)):
+        return sent
+    return sent[0].lower() + sent[1:]
+
+
+def _build_direct_answer(
+    intent: str,
+    direction: str,
+    quality: str,
+    best_sentence: str,
+    unique_count: int,
+) -> str:
+    """Build an explicit, verdict-first direct answer.
+
+    Mirrors the style of a concise literature verdict: clearly states what
+    the research shows, scaled to the quality and direction of the evidence.
+    When research is sparse, explicitly flags that.
+    """
+    sent = best_sentence.rstrip(".")
+    sent_lc = _smart_lowercase(sent)
+
+    # Flag insufficient research
+    if unique_count < 5:
+        return (
+            f"There is currently limited published research on this specific topic. "
+            f"Available evidence suggests that {sent_lc}."
+        )
+
+    if intent == "intervention":
+        if quality == "strong":
+            if direction == "positive":
+                prefix = "Meta-analyses and systematic reviews confirm that"
+            elif direction == "negative":
+                prefix = "Systematic reviews do not support a significant benefit; evidence shows that"
+            else:
+                prefix = "Systematic evidence is inconsistent across studies; findings indicate that"
+        elif quality == "moderate":
+            if direction == "positive":
+                prefix = "Randomized controlled trials demonstrate that"
+            elif direction == "negative":
+                prefix = "Controlled trial evidence does not support this intervention; studies show that"
+            else:
+                prefix = "Controlled trial evidence is mixed; studies indicate that"
+        else:
+            if direction == "positive":
+                prefix = "Observational research suggests that"
+            elif direction == "negative":
+                prefix = "Available evidence does not support a significant effect; studies indicate that"
+            else:
+                prefix = "Research findings are currently mixed; available evidence suggests that"
+    else:
+        # Descriptive or search term
+        if quality == "strong":
+            prefix = "Systematic evidence demonstrates that"
+        elif quality == "moderate":
+            prefix = "Research demonstrates that"
+        elif quality == "weak":
+            prefix = "Observational research suggests that"
+        else:
+            prefix = "Current literature indicates that"
+
+    return f"{prefix} {sent_lc}."
+
+
+def _build_consensus(
+    intent: str,
+    direction: str,
+    quality: str,
+    topic: str,
+    top_sentences: list[tuple[str, int]],
+    n: int,
+    unique_count: int,
+) -> str:
+    """Build a broader narrative context paragraph."""
+    additional = [s for s, _ in top_sentences[1:4]]
+
+    if unique_count < 5:
+        base = (
+            f"Only {unique_count} unique paper(s) were identified for this query. "
+            "Conclusions should be interpreted with caution. "
+        )
+        if additional:
+            base += " ".join(s if s.endswith(".") else s + "." for s in additional[:2])
+        return base
+
+    if intent == "intervention":
+        if direction == "positive":
+            context = (
+                f"Across {n} retrieved papers, the evidence broadly supports a beneficial association. "
+                "Multiple studies report statistically significant findings, though effect sizes, "
+                "populations, and follow-up durations vary."
+            )
+        elif direction == "negative":
+            context = (
+                f"Across {n} retrieved papers, the evidence does not consistently support a significant benefit. "
+                "Several studies report null results or raise concerns about adverse effects."
+            )
+        else:
+            context = (
+                f"Across {n} retrieved papers, evidence is mixed. Some studies report significant effects "
+                "while others do not, likely reflecting heterogeneity in study design, population, "
+                "intervention dosage, and outcome measurement."
+            )
+        return context
+
+    # Descriptive / term: stitch together the next most informative sentences
+    if additional:
+        return " ".join(s if s.endswith(".") else s + "." for s in additional)
+    return f"The retrieved literature covers multiple aspects of {topic}."
+
+
 def _score_sentences(sentences: list[str], query: str, encoder=None) -> np.ndarray:
     """Score sentences against query via semantic similarity, falling back to TF-IDF."""
     if encoder is not None:
@@ -160,43 +309,12 @@ def _deduplicate_sentences(sentences: list[str], threshold: float = 0.82) -> lis
     return [sentences[i] for i in keep]
 
 
-def _build_consensus(
-    intent: str,
-    direction: str,
-    topic: str,
-    top_sentences: list[tuple[str, int]],
-    n: int,
-) -> str:
-    """Build a coherent consensus statement appropriate to the query type."""
-    if intent == "intervention":
-        if direction == "positive":
-            return (
-                f"Across {n} retrieved papers, the evidence broadly supports a beneficial "
-                "association. Multiple studies report statistically significant findings, "
-                "though effect sizes, populations, and follow-up durations vary."
-            )
-        elif direction == "negative":
-            return (
-                f"Across {n} retrieved papers, the evidence does not consistently support "
-                "a significant benefit. Several studies report null results or raise concerns "
-                "about adverse effects."
-            )
-        else:
-            return (
-                f"Across {n} retrieved papers, evidence is mixed. Some studies report "
-                "significant effects while others do not, likely reflecting heterogeneity "
-                "in study design, population, intervention dosage, and outcome measurement."
-            )
-    else:
-        # For descriptive and term queries: build narrative from the next top sentences
-        additional = [s for s, _ in top_sentences[1:4]]
-        if additional:
-            return " ".join(s if s.endswith(".") else s + "." for s in additional)
-        return f"The retrieved literature covers multiple aspects of {topic}."
-
-
 def synthesise(
-    query: str, papers: list[Paper], max_findings: int = 6, encoder=None
+    query: str,
+    papers: list[Paper],
+    max_findings: int = 6,
+    encoder=None,
+    unique_count: int = None,
 ) -> Synthesis:
     """Generate a structured evidence synthesis from the top papers.
 
@@ -205,15 +323,21 @@ def synthesise(
         papers: Top-ranked papers (typically 10).
         max_findings: Maximum key findings to surface.
         encoder: Optional sentence-transformers encoder for semantic scoring.
+        unique_count: Total unique papers after deduplication (for volume scoring).
 
     Returns:
         A Synthesis object.
     """
+    if unique_count is None:
+        unique_count = len(papers)
+
     if not papers:
         return Synthesis(
             direct_answer="No papers were retrieved for this query. Try rephrasing your question.",
             consensus_statement="No papers were retrieved.",
             evidence_quality="weak",
+            research_volume="Limited Research",
+            volume_score=0.05,
             gaps=["Insufficient literature retrieved."],
         )
 
@@ -227,6 +351,8 @@ def synthesise(
             direct_answer="Retrieved papers had insufficient abstract content for synthesis.",
             consensus_statement="Retrieved papers had insufficient abstract content.",
             evidence_quality="weak",
+            research_volume="Limited Research",
+            volume_score=0.05,
         )
 
     texts = [s for s, _ in all_sentences]
@@ -239,11 +365,13 @@ def synthesise(
     n = len(papers)
     quality = _evidence_quality(papers)
 
+    volume_label, volume_score = _compute_research_volume(unique_count, quality)
+
     topic = query.rstrip("?").strip()
     if len(topic) > 80:
         topic = topic[:80] + "..."
 
-    # Collect top diverse sentences (deduplicated by exact match)
+    # Collect top diverse sentences (exact-match deduplicated)
     top_sentences: list[tuple[str, int]] = []
     seen_text: set[str] = set()
     for idx in ranked_indices:
@@ -256,24 +384,8 @@ def synthesise(
 
     best_sentence, _ = top_sentences[0]
 
-    # Build direct answer based on query intent
-    if intent == "intervention":
-        sent = best_sentence.rstrip(".")
-        if direction == "positive":
-            direct_answer = (
-                f"Based on {n} retrieved studies, the evidence supports a beneficial effect: {sent}."
-            )
-        elif direction == "negative":
-            direct_answer = (
-                f"Based on {n} retrieved studies, the evidence does not support a significant benefit: {sent}."
-            )
-        else:
-            direct_answer = f"Based on {n} retrieved studies, evidence is mixed: {sent}."
-    else:
-        # Descriptive or search term: lead with the most informative sentence
-        direct_answer = best_sentence if best_sentence.endswith(".") else best_sentence + "."
-
-    consensus_statement = _build_consensus(intent, direction, topic, top_sentences, n)
+    direct_answer = _build_direct_answer(intent, direction, quality, best_sentence, unique_count)
+    consensus_statement = _build_consensus(intent, direction, quality, topic, top_sentences, n, unique_count)
 
     # Key findings: next highest-scoring non-redundant sentences
     raw_texts = [s for s, _ in top_sentences[1: max_findings * 3 + 1]]
@@ -315,7 +427,7 @@ def synthesise(
     if "meta-analysis" in combined_lower:
         study_types.append("meta-analyses")
     limitations = (
-        f"Synthesis based on {n} papers from PubMed and Semantic Scholar "
+        f"Synthesis based on {n} papers (from {unique_count} unique retrieved) from PubMed and Semantic Scholar "
         f"({'including ' + ', '.join(study_types) if study_types else 'mixed study designs'}). "
         "All output sentences are extracted verbatim from source abstracts and cited by paper number."
     )
@@ -325,6 +437,8 @@ def synthesise(
         consensus_statement=consensus_statement,
         key_findings=key_findings,
         evidence_quality=quality,
+        research_volume=volume_label,
+        volume_score=volume_score,
         gaps=gaps,
         limitations=limitations,
     )

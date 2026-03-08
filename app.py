@@ -114,13 +114,15 @@ if page == "Search":
         "the key evidence from the top papers."
     )
     st.caption(
-        'Example: "Do SGLT2 inhibitors reduce heart failure hospitalisation in type 2 diabetes?"'
+        'Examples: "Do statins reduce cardiovascular mortality in patients with heart failure?" · '
+        '"What is the role of telomere shortening in cellular senescence?" · '
+        '"How does sleep deprivation affect inflammatory biomarkers?"'
     )
 
     with st.form("search_form"):
         query = st.text_area(
             "Research question",
-            placeholder="What is the effect of metformin on cardiovascular outcomes in Type 2 diabetes?",
+            placeholder="Does caloric restriction extend lifespan in mammalian models?",
             height=90,
             label_visibility="collapsed",
         )
@@ -141,9 +143,9 @@ if page == "Search":
         intent = _detect_intent(query)
         if intent == "term":
             st.info(
-                "Tip: For a more targeted synthesis, phrase your input as a clinical question. "
-                'Example: "What are the main causes of heavy menstrual bleeding?" or '
-                '"Do tranexamic acid reduce heavy menstrual bleeding?" '
+                "Tip: For a more explicit synthesis verdict, phrase your input as a question. "
+                'Example: "What is the role of p53 in DNA damage response?" or '
+                '"Do ACE inhibitors reduce mortality in chronic heart failure?" '
                 "Proceeding with your search term below."
             )
 
@@ -166,7 +168,7 @@ if page == "Search":
         top_papers = rerank(query, papers, top_k=10, encoder=encoder)
         progress.progress(75, text="Synthesising evidence...")
 
-        synthesis = synthesise(query, top_papers, encoder=encoder)
+        synthesis = synthesise(query, top_papers, encoder=encoder, unique_count=len(papers))
         contradictions = detect_contradictions(top_papers)
         progress.progress(100, text="Complete.")
         time.sleep(0.3)
@@ -192,6 +194,31 @@ if page == "Search":
             f'<span class="{badge_class}">{badge_label}</span>',
             unsafe_allow_html=True,
         )
+
+        # Research volume bar
+        vol_pct = int(synthesis.volume_score * 100)
+        vol_colors = {
+            "Extensively Researched": "#1D8348",
+            "Well Researched": "#2E86C1",
+            "Moderately Researched": "#D4AC0D",
+            "Limited Research": "#C0392B",
+        }
+        vol_color = vol_colors.get(synthesis.research_volume, "#D4AC0D")
+        st.markdown(f"""
+<div style="margin:0.4rem 0 1.1rem 0;">
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <span style="font-size:.8rem;color:#666;white-space:nowrap;min-width:130px;">Research Coverage</span>
+    <div style="flex:1;background:#DDE3EA;border-radius:4px;height:9px;">
+      <div style="background:{vol_color};width:{vol_pct}%;height:9px;border-radius:4px;"></div>
+    </div>
+    <span style="font-size:.8rem;font-weight:600;color:{vol_color};white-space:nowrap;min-width:160px;text-align:right;">{synthesis.research_volume}</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:3px;padding:0 130px 0 0;">
+    <span style="font-size:.7rem;color:#aaa;">Poor</span>
+    <span style="font-size:.7rem;color:#aaa;">Extensive</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
         # Direct answer at the top
         st.markdown(
