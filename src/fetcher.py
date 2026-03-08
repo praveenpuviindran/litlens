@@ -3,6 +3,15 @@
 No API keys required. PubMed is queried via NCBI E-utilities (free tier,
 3 req/sec). Semantic Scholar is queried via their public search API (free,
 no authentication needed for basic access).
+
+Query strategy:
+  PubMed   - receives a stripped, term-based query with common abbreviations
+             expanded (KO -> knockout, KD -> knockdown, etc.) so MeSH terms
+             are matched correctly. Falls back to a shorter 2-term query if
+             the full query yields nothing.
+  S2       - receives the original natural language query (Semantic Scholar
+             handles NL well). Falls back to the stripped query if NL returns
+             nothing.
 """
 
 import time
@@ -11,7 +20,7 @@ from xml.etree import ElementTree as ET
 
 import requests
 
-# Words that add no retrieval value when sent to PubMed or Semantic Scholar
+# Words that add no retrieval value when sent to PubMed
 _SEARCH_STOPWORDS = {
     "what", "how", "why", "does", "do", "is", "are", "can", "should",
     "will", "would", "which", "when", "where", "who", "the", "of",
@@ -20,31 +29,95 @@ _SEARCH_STOPWORDS = {
     "between", "among", "there", "any", "some", "their",
 }
 
+# Common biomedical abbreviations that PubMed may not index well as-is.
+# These are expanded before building the PubMed search term.
+_ABBREV_EXPANSIONS: dict[str, str] = {
+    "KO": "knockout",
+    "KD": "knockdown",
+    "OE": "overexpression",
+    "WT": "wild-type",
+    "OA": "osteoarthritis",
+    "MI": "myocardial infarction",
+    "CVD": "cardiovascular disease",
+    "HF": "heart failure",
+    "DM": "diabetes mellitus",
+    "HTN": "hypertension",
+    "CKD": "chronic kidney disease",
+    "IBD": "inflammatory bowel disease",
+    "MS": "multiple sclerosis",
+    "RA": "rheumatoid arthritis",
+    "SLE": "systemic lupus erythematosus",
+    "NASH": "nonalcoholic steatohepatitis",
+    "NAFLD": "nonalcoholic fatty liver disease",
+    "CAD": "coronary artery disease",
+    "AF": "atrial fibrillation",
+    "PE": "pulmonary embolism",
+    "DVT": "deep vein thrombosis",
+    "AKI": "acute kidney injury",
+    "ARDS": "acute respiratory distress syndrome",
+    "ICU": "intensive care unit",
+    "SNP": "single nucleotide polymorphism",
+    "GWAS": "genome-wide association study",
+    "ChIP": "chromatin immunoprecipitation",
+    "PCR": "polymerase chain reaction",
+    "qPCR": "quantitative PCR",
+    "CRISPR": "CRISPR Cas9",
+    "siRNA": "small interfering RNA",
+    "shRNA": "short hairpin RNA",
+    "mRNA": "messenger RNA",
+    "lncRNA": "long noncoding RNA",
+}
 
-def _build_search_query(query: str) -> str:
-    """Strip question and stop words to extract core medical search terms.
 
-    PubMed ESearch performs better with concise term-based queries than with
-    full natural-language questions. For example:
-      "what is the effect of aspirin on platelet reactivity"
-      -> "aspirin platelet reactivity"
+def _expand_abbreviations(query: str) -> str:
+    """Expand common biomedical abbreviations for better PubMed MeSH matching.
 
-    Single uppercase characters (T, B, NK) are preserved as they often denote
-    biomedical abbreviations (T cell, B cell, NK cell). Other single-char or
-    very short words are filtered.
+    Only expands tokens that exactly match the abbreviation (case-sensitive)
+    so that gene/protein names that happen to share abbreviations are not
+    wrongly expanded.
     """
-    original_words = query.rstrip("?").split()
+    tokens = query.split()
+    expanded = []
+    for tok in tokens:
+        # Strip trailing punctuation for lookup, then re-attach
+        clean = tok.rstrip(".,?!")
+        suffix = tok[len(clean):]
+        if clean in _ABBREV_EXPANSIONS:
+            expanded.append(_ABBREV_EXPANSIONS[clean] + suffix)
+        else:
+            expanded.append(tok)
+    return " ".join(expanded)
+
+
+def _build_pubmed_query(query: str) -> str:
+    """Build an optimized term-based query for PubMed ESearch.
+
+    Expands abbreviations, then strips question/stop words while preserving
+    uppercase abbreviations (T, B, GADS, TNF, IL-6, etc.).
+    """
+    expanded = _expand_abbreviations(query)
+    original_words = expanded.rstrip("?").split()
     key_terms = []
     for orig in original_words:
         lower = orig.lower()
         if lower in _SEARCH_STOPWORDS:
             continue
-        # Preserve uppercase abbreviations like T, B, NK, IL, TNF regardless of length
+        # Preserve uppercase abbreviations (single-char like T, B and multi-char like GADS)
         if orig.isupper() or (len(orig) >= 2 and orig[0].isupper() and any(c.isdigit() for c in orig)):
             key_terms.append(orig)
         elif len(lower) > 2:
             key_terms.append(lower)
-    return " ".join(key_terms) if key_terms else query
+    return " ".join(key_terms) if key_terms else expanded.rstrip("?").strip()
+
+
+def _build_s2_query(query: str) -> str:
+    """Build query for Semantic Scholar.
+
+    S2 handles natural language queries well, so pass the original query
+    (with abbreviations expanded for better recall) rather than stripping it.
+    """
+    return _expand_abbreviations(query).rstrip("?").strip()
+
 
 # Generic contact email satisfies NCBI's "strongly recommended" policy
 # without requiring the user to provide one.
@@ -200,16 +273,35 @@ def _parse_pubmed_xml(xml_text: str) -> list[Paper]:
 def fetch_pubmed(query: str, max_results: int = 25) -> list[Paper]:
     """Fetch papers from PubMed matching query.
 
+    Uses abbreviation-expanded, stopword-stripped terms for ESearch.
+    If the full term set returns nothing, retries with a shorter 2-term
+    fallback to maximise recall on niche queries.
+
     Args:
-        query: Search string (plain text, natural language, or MeSH syntax).
+        query: Search string (plain text or natural language).
         max_results: Maximum number of papers to fetch.
 
     Returns:
         List of Paper objects with abstracts.
     """
-    ids = _pubmed_esearch(_build_search_query(query), max_results)
+    search_q = _build_pubmed_query(query)
+    ids = _pubmed_esearch(search_q, max_results)
+
+    # Fallback 1: drop to first 3 terms if the full query found nothing
+    if not ids:
+        terms = search_q.split()
+        if len(terms) > 3:
+            ids = _pubmed_esearch(" ".join(terms[:3]), max_results)
+
+    # Fallback 2: drop to first 2 terms
+    if not ids:
+        terms = search_q.split()
+        if len(terms) > 2:
+            ids = _pubmed_esearch(" ".join(terms[:2]), max_results)
+
     if not ids:
         return []
+
     time.sleep(0.35)  # Respect 3 req/sec free-tier limit
     params = {
         "db": "pubmed",
@@ -228,22 +320,12 @@ def fetch_pubmed(query: str, max_results: int = 25) -> list[Paper]:
 
 # ── Semantic Scholar ──────────────────────────────────────────────────────────
 
-def fetch_semantic_scholar(query: str, max_results: int = 25) -> list[Paper]:
-    """Fetch papers from Semantic Scholar matching query.
-
-    No API key required  -  uses the free public search endpoint.
-
-    Args:
-        query: Plain-text search query.
-        max_results: Maximum number of papers to fetch.
-
-    Returns:
-        List of Paper objects with abstracts.
-    """
+def _fetch_s2_with_query(search_q: str, max_results: int) -> list[Paper]:
+    """Internal helper: run one S2 query and return Paper objects."""
     try:
         resp = requests.get(
             S2_SEARCH_URL,
-            params={"query": _build_search_query(query), "limit": max_results, "fields": S2_FIELDS},
+            params={"query": search_q, "limit": max_results, "fields": S2_FIELDS},
             timeout=TIMEOUT,
         )
         resp.raise_for_status()
@@ -276,6 +358,28 @@ def fetch_semantic_scholar(query: str, max_results: int = 25) -> list[Paper]:
         return papers
     except Exception:
         return []
+
+
+def fetch_semantic_scholar(query: str, max_results: int = 25) -> list[Paper]:
+    """Fetch papers from Semantic Scholar matching query.
+
+    Tries the natural language query first (S2 handles it well), then
+    falls back to a stripped term-based query if NL returns nothing.
+
+    Args:
+        query: Plain-text or natural language search query.
+        max_results: Maximum number of papers to fetch.
+
+    Returns:
+        List of Paper objects with abstracts.
+    """
+    # Primary: natural language with abbreviations expanded
+    papers = _fetch_s2_with_query(_build_s2_query(query), max_results)
+    if papers:
+        return papers
+
+    # Fallback: stripped term query
+    return _fetch_s2_with_query(_build_pubmed_query(query), max_results)
 
 
 def fetch_all(query: str, max_results: int = 25) -> list[Paper]:
