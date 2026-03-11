@@ -145,3 +145,75 @@ MIT
 ---
 
 *Praveen Puviindran - [GitHub](https://github.com/praveenpuviindran) - [LinkedIn](https://www.linkedin.com/in/praveen-puviindran-218998220) - [Website](https://praveenpuviindran.github.io/)*
+
+---
+
+## Model Monitoring & Evaluation
+
+Merges to `main` are gated by a faithfulness threshold of 0.75. The CI pipeline runs the
+full Ragas evaluation suite on every push to main using `eval/run_ragas_eval.py`.
+
+### Ragas Eval Metrics
+
+| Metric | Description | Threshold |
+|--------|-------------|-----------|
+| **Faithfulness** | Are all synthesis claims supported by retrieved paper abstracts? | ≥ 0.75 |
+| **Answer Relevancy** | Does the consensus statement address the research question? | ≥ 0.70 |
+| **Context Precision** | Are the retrieved papers relevant to the query? | ≥ 0.65 |
+| **Retrieval Precision** | Do retrieved papers contain expected keywords? | ≥ 0.60 |
+
+Run the evaluation locally:
+```bash
+python eval/run_ragas_eval.py --sample-size 20
+```
+
+Results are appended to `eval/eval_history.json` and visualised in the **Eval Dashboard** tab of the Streamlit app.
+
+---
+
+## Query Intent Classification
+
+Every search query is classified into one of five intent types before the pipeline runs.
+Intent routing selects the most appropriate fetching strategy and synthesis style.
+
+| Intent | Example Query | Routing |
+|--------|--------------|---------|
+| **Definitional** | "What is metformin?" | Review articles, up to 5 papers |
+| **Comparative** | "Compare statin vs PCSK9i for LDL" | RCTs preferred, up to 10 papers |
+| **Search** | "Recent trials on GLP-1 agonists" | Sorted by recency, up to 15 papers |
+| **Mechanistic** | "Why does amyloid cause neurodegeneration?" | Basic science, up to 8 papers |
+| **Epidemiological** | "Prevalence of T2D by region" | Cohort studies, up to 10 papers |
+
+The classified intent and routing decision are shown as a badge on every search result.
+Synthesis responses include `recommended_next_searches` displayed as clickable buttons.
+
+---
+
+## Analytics
+
+LitLens tracks query patterns and synthesis quality to support ongoing improvement.
+
+**Analytics API:** `GET /analytics/summary`  
+**Analytics dashboard:** available in the Streamlit app under the **Analytics** page
+
+### Metrics tracked
+
+- Query volume and latency over time (daily, by intent)
+- Topic frequency across all queries (word frequency from raw queries)
+- Contradiction detection rate per week
+- Faithfulness scores by query intent
+- User feedback ratings (Helpful / Not helpful)
+
+### Deployment
+
+## GitHub Secrets Required for CI Eval Gate
+
+In your GitHub repository settings → **Secrets** → **Actions**, add:
+
+| Secret | Description |
+|--------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key for LLM calls and Ragas evaluation |
+| `NCBI_API_KEY` | NCBI E-utilities key (optional but increases rate limits) |
+| `NCBI_EMAIL` | Email address for NCBI API usage |
+| `DATABASE_URL` | Render PostgreSQL connection string (`postgresql+asyncpg://...`) |
+| `BACKEND_URL` | Deployed backend URL for the eval gate to call `/search` |
