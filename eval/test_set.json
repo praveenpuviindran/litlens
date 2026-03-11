@@ -1,52 +1,402 @@
 [
-  {"id": "q001", "question": "What is the effect of statins on LDL cholesterol in primary prevention?", "expected_answer_keywords": ["LDL reduction", "cardiovascular risk", "primary prevention"], "category": "drug_efficacy"},
-  {"id": "q002", "question": "Does metformin reduce cardiovascular mortality in type 2 diabetes?", "expected_answer_keywords": ["metformin", "cardiovascular mortality", "type 2 diabetes"], "category": "drug_efficacy"},
-  {"id": "q003", "question": "What are the mechanisms of amyloid beta accumulation in Alzheimer's disease?", "expected_answer_keywords": ["amyloid beta", "tau", "neurodegeneration", "plaques"], "category": "disease_mechanism"},
-  {"id": "q004", "question": "How effective are SGLT2 inhibitors for heart failure with reduced ejection fraction?", "expected_answer_keywords": ["SGLT2", "heart failure", "ejection fraction", "hospitalization"], "category": "drug_efficacy"},
-  {"id": "q005", "question": "What is the diagnostic accuracy of CT angiography for coronary artery disease?", "expected_answer_keywords": ["CT angiography", "coronary artery disease", "sensitivity", "specificity"], "category": "diagnostic_criteria"},
-  {"id": "q006", "question": "Do SSRIs improve outcomes in major depressive disorder compared to placebo?", "expected_answer_keywords": ["SSRI", "depression", "placebo", "remission"], "category": "drug_efficacy"},
-  {"id": "q007", "question": "What is the role of BRCA1 mutations in hereditary breast cancer?", "expected_answer_keywords": ["BRCA1", "breast cancer", "hereditary", "risk"], "category": "gene_disease"},
-  {"id": "q008", "question": "Is bariatric surgery effective for long-term weight loss in morbid obesity?", "expected_answer_keywords": ["bariatric surgery", "weight loss", "obesity", "long-term"], "category": "surgical_intervention"},
-  {"id": "q009", "question": "What are the risk factors for developing type 2 diabetes mellitus?", "expected_answer_keywords": ["risk factors", "diabetes", "obesity", "insulin resistance"], "category": "disease_mechanism"},
-  {"id": "q010", "question": "How does aspirin affect platelet aggregation in cardiovascular prevention?", "expected_answer_keywords": ["aspirin", "platelet", "aggregation", "cardiovascular"], "category": "drug_efficacy"},
-  {"id": "q011", "question": "What surgical approaches are used for lumbar disc herniation?", "expected_answer_keywords": ["lumbar", "disc herniation", "surgery", "microdiscectomy"], "category": "surgical_intervention"},
-  {"id": "q012", "question": "Does ACE inhibitor therapy reduce progression of chronic kidney disease?", "expected_answer_keywords": ["ACE inhibitor", "chronic kidney disease", "proteinuria", "progression"], "category": "drug_efficacy"},
-  {"id": "q013", "question": "What genetic variants are associated with familial hypercholesterolemia?", "expected_answer_keywords": ["LDLR", "PCSK9", "APOB", "familial hypercholesterolemia"], "category": "gene_disease"},
-  {"id": "q014", "question": "How effective is cognitive behavioral therapy for generalized anxiety disorder?", "expected_answer_keywords": ["CBT", "anxiety", "cognitive behavioral", "efficacy"], "category": "drug_efficacy"},
-  {"id": "q015", "question": "What are the diagnostic criteria for sepsis according to Sepsis-3?", "expected_answer_keywords": ["sepsis", "SOFA", "organ dysfunction", "infection"], "category": "diagnostic_criteria"},
-  {"id": "q016", "question": "Does vitamin D supplementation reduce fracture risk in elderly populations?", "expected_answer_keywords": ["vitamin D", "fracture", "elderly", "bone density"], "category": "drug_efficacy"},
-  {"id": "q017", "question": "What is the pathophysiology of non-alcoholic fatty liver disease?", "expected_answer_keywords": ["NAFLD", "steatosis", "insulin resistance", "lipotoxicity"], "category": "disease_mechanism"},
-  {"id": "q018", "question": "Is laparoscopic cholecystectomy superior to open surgery for gallstones?", "expected_answer_keywords": ["laparoscopic", "cholecystectomy", "open surgery", "recovery"], "category": "surgical_intervention"},
-  {"id": "q019", "question": "What is the association between TP53 mutations and cancer prognosis?", "expected_answer_keywords": ["TP53", "tumor suppressor", "mutation", "prognosis"], "category": "gene_disease"},
-  {"id": "q020", "question": "Do GLP-1 receptor agonists cause weight loss in non-diabetic obese patients?", "expected_answer_keywords": ["GLP-1", "weight loss", "obesity", "semaglutide"], "category": "drug_efficacy"},
-  {"id": "q021", "question": "What are the MRI features that distinguish multiple sclerosis plaques?", "expected_answer_keywords": ["MRI", "multiple sclerosis", "white matter", "lesions"], "category": "diagnostic_criteria"},
-  {"id": "q022", "question": "How does smoking cessation affect long-term cardiovascular outcomes?", "expected_answer_keywords": ["smoking cessation", "cardiovascular", "risk reduction", "mortality"], "category": "drug_efficacy"},
-  {"id": "q023", "question": "What is the mechanism of action of checkpoint inhibitors in cancer immunotherapy?", "expected_answer_keywords": ["checkpoint inhibitor", "PD-1", "CTLA-4", "T cell"], "category": "disease_mechanism"},
-  {"id": "q024", "question": "Is total knee arthroplasty effective for severe osteoarthritis?", "expected_answer_keywords": ["knee arthroplasty", "osteoarthritis", "pain relief", "function"], "category": "surgical_intervention"},
-  {"id": "q025", "question": "What genes are implicated in the risk of schizophrenia?", "expected_answer_keywords": ["schizophrenia", "GWAS", "DISC1", "genetic risk"], "category": "gene_disease"},
-  {"id": "q026", "question": "Does beta-blocker therapy improve survival after myocardial infarction?", "expected_answer_keywords": ["beta-blocker", "myocardial infarction", "survival", "mortality"], "category": "drug_efficacy"},
-  {"id": "q027", "question": "What are the criteria for diagnosing heart failure with preserved ejection fraction?", "expected_answer_keywords": ["HFpEF", "ejection fraction", "diastolic dysfunction", "BNP"], "category": "diagnostic_criteria"},
-  {"id": "q028", "question": "How do TNF-alpha inhibitors reduce joint destruction in rheumatoid arthritis?", "expected_answer_keywords": ["TNF", "rheumatoid arthritis", "joint destruction", "biologics"], "category": "drug_efficacy"},
-  {"id": "q029", "question": "What molecular pathways are dysregulated in Parkinson's disease?", "expected_answer_keywords": ["Parkinson", "alpha-synuclein", "dopamine", "mitochondria"], "category": "disease_mechanism"},
-  {"id": "q030", "question": "Is robotic-assisted prostatectomy better than open radical prostatectomy?", "expected_answer_keywords": ["robotic", "prostatectomy", "prostate cancer", "outcomes"], "category": "surgical_intervention"},
-  {"id": "q031", "question": "What is the role of VEGF in tumor angiogenesis?", "expected_answer_keywords": ["VEGF", "angiogenesis", "tumor", "bevacizumab"], "category": "gene_disease"},
-  {"id": "q032", "question": "Do omega-3 fatty acids reduce triglyceride levels significantly?", "expected_answer_keywords": ["omega-3", "triglycerides", "EPA", "DHA"], "category": "drug_efficacy"},
-  {"id": "q033", "question": "What biomarkers distinguish ALS from other motor neuron diseases?", "expected_answer_keywords": ["ALS", "biomarker", "neurofilament", "motor neuron"], "category": "diagnostic_criteria"},
-  {"id": "q034", "question": "What is the effect of exercise training on heart failure outcomes?", "expected_answer_keywords": ["exercise", "heart failure", "VO2 max", "rehabilitation"], "category": "drug_efficacy"},
-  {"id": "q035", "question": "How does APOE epsilon 4 allele increase Alzheimer's disease risk?", "expected_answer_keywords": ["APOE4", "Alzheimer", "amyloid", "risk factor"], "category": "gene_disease"},
-  {"id": "q036", "question": "Is sleeve gastrectomy as effective as Roux-en-Y bypass for type 2 diabetes remission?", "expected_answer_keywords": ["sleeve gastrectomy", "Roux-en-Y", "diabetes remission", "bariatric"], "category": "surgical_intervention"},
-  {"id": "q037", "question": "What are the mechanisms of antibiotic resistance in Staphylococcus aureus?", "expected_answer_keywords": ["antibiotic resistance", "MRSA", "mecA", "Staphylococcus"], "category": "disease_mechanism"},
-  {"id": "q038", "question": "Does proton pump inhibitor use increase risk of community-acquired pneumonia?", "expected_answer_keywords": ["proton pump inhibitor", "pneumonia", "acid suppression", "risk"], "category": "drug_efficacy"},
-  {"id": "q039", "question": "What criteria define metabolic syndrome according to IDF guidelines?", "expected_answer_keywords": ["metabolic syndrome", "waist circumference", "blood pressure", "glucose"], "category": "diagnostic_criteria"},
-  {"id": "q040", "question": "How do PCSK9 inhibitors lower LDL cholesterol beyond statins?", "expected_answer_keywords": ["PCSK9", "LDL", "statin", "evolocumab"], "category": "drug_efficacy"},
-  {"id": "q041", "question": "What mutations in CFTR gene cause cystic fibrosis?", "expected_answer_keywords": ["CFTR", "cystic fibrosis", "deltaF508", "mutation"], "category": "gene_disease"},
-  {"id": "q042", "question": "Is transcatheter aortic valve replacement non-inferior to surgical replacement?", "expected_answer_keywords": ["TAVR", "SAVR", "aortic stenosis", "mortality"], "category": "surgical_intervention"},
-  {"id": "q043", "question": "What is the inflammatory cascade in sepsis-induced organ failure?", "expected_answer_keywords": ["sepsis", "cytokine", "organ failure", "inflammation"], "category": "disease_mechanism"},
-  {"id": "q044", "question": "Do bisphosphonates reduce vertebral fracture risk in postmenopausal osteoporosis?", "expected_answer_keywords": ["bisphosphonates", "vertebral fracture", "osteoporosis", "alendronate"], "category": "drug_efficacy"},
-  {"id": "q045", "question": "What PET imaging findings are characteristic of frontotemporal dementia?", "expected_answer_keywords": ["PET", "frontotemporal dementia", "FDG", "hypometabolism"], "category": "diagnostic_criteria"},
-  {"id": "q046", "question": "How does the HER2 gene amplification affect breast cancer treatment?", "expected_answer_keywords": ["HER2", "breast cancer", "trastuzumab", "targeted therapy"], "category": "gene_disease"},
-  {"id": "q047", "question": "What is the 30-day mortality rate after emergency laparotomy?", "expected_answer_keywords": ["laparotomy", "emergency surgery", "mortality", "outcomes"], "category": "surgical_intervention"},
-  {"id": "q048", "question": "Does renin-angiotensin system blockade slow diabetic nephropathy?", "expected_answer_keywords": ["renin-angiotensin", "diabetic nephropathy", "proteinuria", "ARB"], "category": "drug_efficacy"},
-  {"id": "q049", "question": "What epigenetic changes are involved in colorectal cancer progression?", "expected_answer_keywords": ["epigenetic", "methylation", "colorectal cancer", "histone"], "category": "disease_mechanism"},
-  {"id": "q050", "question": "Is minimally invasive mitral valve repair associated with better outcomes than open repair?", "expected_answer_keywords": ["mitral valve", "minimally invasive", "repair", "cardiopulmonary bypass"], "category": "surgical_intervention"}
+  {
+    "id": "q001",
+    "question": "What is the effect of statins on LDL cholesterol and cardiovascular outcomes in primary prevention?",
+    "ground_truth": "Statins significantly reduce LDL cholesterol in primary prevention, with RCTs demonstrating 25-50% reductions from baseline. The JUPITER trial showed rosuvastatin 20mg reduced major cardiovascular events by 44% (HR 0.56) in patients with elevated hsCRP but normal LDL. The ASCOT-LLA trial demonstrated a 36% reduction in major cardiovascular events with atorvastatin 10mg versus placebo in hypertensive patients without prior CVD.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["LDL", "statin", "primary prevention", "cardiovascular", "JUPITER"],
+    "expected_answer_keywords": ["LDL", "statin", "primary prevention", "cardiovascular", "JUPITER"]
+  },
+  {
+    "id": "q002",
+    "question": "How effective is metformin in reducing HbA1c and cardiovascular risk in type 2 diabetes?",
+    "ground_truth": "Metformin is first-line therapy for type 2 diabetes, typically reducing HbA1c by 1.0-1.5% as monotherapy. The UKPDS 34 trial demonstrated that metformin reduced all-cause mortality by 36% and diabetes-related deaths by 42% in overweight patients with T2D compared to conventional therapy. Metformin also demonstrated a 39% reduction in myocardial infarction, establishing it as the only oral antidiabetic agent with proven cardiovascular mortality benefit in T2D.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["metformin", "HbA1c", "UKPDS", "type 2 diabetes", "cardiovascular mortality"],
+    "expected_answer_keywords": ["metformin", "HbA1c", "UKPDS", "type 2 diabetes", "cardiovascular mortality"]
+  },
+  {
+    "id": "q003",
+    "question": "What is the efficacy of ACE inhibitors in reducing mortality and hospitalizations in heart failure with reduced ejection fraction?",
+    "ground_truth": "ACE inhibitors are foundational therapy in HFrEF, with robust mortality benefits demonstrated across multiple trials. The CONSENSUS trial showed enalapril reduced all-cause mortality by 40% at 6 months in severe heart failure (NYHA class IV). The SOLVD treatment trial demonstrated that enalapril reduced mortality by 16% and the combined endpoint of death or hospitalization by 26% in patients with EF ≤35%, establishing ACE inhibitors as a cornerstone of HFrEF management.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["ACE inhibitor", "enalapril", "heart failure", "CONSENSUS", "ejection fraction"],
+    "expected_answer_keywords": ["ACE inhibitor", "enalapril", "heart failure", "CONSENSUS", "ejection fraction"]
+  },
+  {
+    "id": "q004",
+    "question": "Do beta blockers reduce mortality in patients with heart failure with reduced ejection fraction?",
+    "ground_truth": "Beta blockers significantly reduce mortality in HFrEF, with three agents (carvedilol, metoprolol succinate, bisoprolol) having demonstrated survival benefits in landmark trials. The MERIT-HF trial showed metoprolol CR/XL reduced all-cause mortality by 34% and sudden death by 41% in patients with EF ≤40%. The COPERNICUS trial demonstrated carvedilol reduced mortality by 35% in severe HFrEF (EF <25%), and the CIBIS-II trial showed bisoprolol reduced all-cause mortality by 34%.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["beta blocker", "carvedilol", "metoprolol", "MERIT-HF", "HFrEF mortality"],
+    "expected_answer_keywords": ["beta blocker", "carvedilol", "metoprolol", "MERIT-HF", "HFrEF mortality"]
+  },
+  {
+    "id": "q005",
+    "question": "What is the evidence for low-dose aspirin in secondary prevention of cardiovascular events?",
+    "ground_truth": "Low-dose aspirin (75-100mg daily) is well-established for secondary prevention of cardiovascular events through irreversible inhibition of platelet cyclooxygenase-1. The Antithrombotic Trialists' Collaboration meta-analysis of over 100,000 patients showed aspirin reduced serious vascular events by about 25% in high-risk patients. The ISIS-2 trial demonstrated that aspirin reduced 5-week vascular mortality by 23% in acute myocardial infarction, with benefits additive to streptokinase, and long-term secondary prevention data shows approximately 1.5% absolute risk reduction per year in recurrent MI.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["aspirin", "antiplatelet", "secondary prevention", "ISIS-2", "cardiovascular events"],
+    "expected_answer_keywords": ["aspirin", "antiplatelet", "secondary prevention", "ISIS-2", "cardiovascular events"]
+  },
+  {
+    "id": "q006",
+    "question": "How effective are SSRIs compared to placebo in treating major depressive disorder?",
+    "ground_truth": "SSRIs demonstrate statistically significant but modest efficacy over placebo in major depressive disorder, with effect sizes varying by depression severity. A landmark 2008 meta-analysis by Kirsch et al. in PLOS Medicine showed that the advantage of antidepressants over placebo was below the threshold for clinical significance for all but the most severely depressed patients (HDRS ≥23). The large STAR*D trial demonstrated that approximately 28% of patients achieved remission with citalopram as first-step treatment, and a 2018 Lancet meta-analysis by Cipriani et al. covering 522 trials showed all 21 antidepressants were more efficacious than placebo with ORs ranging from 1.37 to 2.13.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["SSRI", "antidepressant", "major depressive disorder", "STAR*D", "placebo-controlled"],
+    "expected_answer_keywords": ["SSRI", "antidepressant", "major depressive disorder", "STAR*D", "placebo-controlled"]
+  },
+  {
+    "id": "q007",
+    "question": "What is the efficacy of GLP-1 receptor agonists on weight loss and cardiovascular outcomes in type 2 diabetes?",
+    "ground_truth": "GLP-1 receptor agonists provide clinically meaningful weight loss and cardiovascular benefits in T2D beyond glycemic control. The LEADER trial demonstrated liraglutide reduced the primary MACE endpoint by 13% (HR 0.87) in high-risk T2D patients, with a 22% reduction in cardiovascular mortality. The SUSTAIN-6 trial showed semaglutide reduced MACE by 26% (HR 0.74) and also reduced HbA1c by approximately 1.5%, while body weight was reduced by 3.6-4.9 kg depending on dose, making GLP-1 agonists a preferred agent in T2D patients with established cardiovascular disease.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["GLP-1 agonist", "liraglutide", "semaglutide", "LEADER trial", "cardiovascular outcomes"],
+    "expected_answer_keywords": ["GLP-1 agonist", "liraglutide", "semaglutide", "LEADER trial", "cardiovascular outcomes"]
+  },
+  {
+    "id": "q008",
+    "question": "How effective are bisphosphonates in reducing fracture risk in postmenopausal osteoporosis?",
+    "ground_truth": "Bisphosphonates are first-line pharmacotherapy for osteoporosis, with robust evidence for vertebral and non-vertebral fracture reduction. The FIT (Fracture Intervention Trial) demonstrated that alendronate reduced vertebral fractures by 47% and hip fractures by 51% in postmenopausal women with existing vertebral fractures. The HORIZON Pivotal Fracture Trial showed annual zoledronic acid infusion reduced morphometric vertebral fractures by 70% and hip fractures by 41% over 3 years, with the additional benefit of reducing all-cause mortality by 28% in patients after hip fracture.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["bisphosphonate", "alendronate", "osteoporosis", "fracture prevention", "FIT trial"],
+    "expected_answer_keywords": ["bisphosphonate", "alendronate", "osteoporosis", "fracture prevention", "FIT trial"]
+  },
+  {
+    "id": "q009",
+    "question": "What is the comparative efficacy of direct oral anticoagulants versus warfarin for stroke prevention in atrial fibrillation?",
+    "ground_truth": "Direct oral anticoagulants (DOACs) have demonstrated non-inferiority or superiority to warfarin for stroke prevention in AF with improved safety profiles. The RE-LY trial showed dabigatran 150mg reduced stroke/systemic embolism by 34% compared to warfarin, while the ROCKET-AF trial demonstrated rivaroxaban was non-inferior to warfarin with a 21% relative risk reduction in the on-treatment analysis. A network meta-analysis of all four DOACs showed they collectively reduced all-cause mortality by 10%, stroke by 19%, and intracranial hemorrhage by 52% compared to warfarin.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["DOAC", "dabigatran", "atrial fibrillation", "RE-LY trial", "stroke prevention"],
+    "expected_answer_keywords": ["DOAC", "dabigatran", "atrial fibrillation", "RE-LY trial", "stroke prevention"]
+  },
+  {
+    "id": "q010",
+    "question": "What is the evidence for systemic corticosteroids in reducing mortality in severe COVID-19 and septic shock?",
+    "ground_truth": "Systemic corticosteroids have demonstrated mortality benefits in specific critical illness contexts. The RECOVERY trial showed dexamethasone 6mg daily for up to 10 days reduced 28-day mortality by 35% in mechanically ventilated COVID-19 patients (RR 0.64) and by 20% in those requiring oxygen alone, but showed no benefit and possible harm in patients not requiring respiratory support. The ADRENAL trial comparing hydrocortisone to placebo in septic shock showed no significant difference in 90-day mortality, though hydrocortisone accelerated shock reversal and reduced ICU length of stay.",
+    "category": "drug_efficacy",
+    "expected_keywords": ["corticosteroid", "dexamethasone", "RECOVERY trial", "COVID-19 mortality", "septic shock"],
+    "expected_answer_keywords": ["corticosteroid", "dexamethasone", "RECOVERY trial", "COVID-19 mortality", "septic shock"]
+  },
+  {
+    "id": "q011",
+    "question": "What is the amyloid cascade hypothesis for Alzheimer's disease and what is the evidence supporting it?",
+    "ground_truth": "The amyloid cascade hypothesis posits that accumulation of amyloid-beta (Aβ) peptides, particularly Aβ42, initiates a pathological cascade leading to neurofibrillary tau tangles, synaptic dysfunction, and neuronal death in Alzheimer's disease. Evidence includes autosomal dominant AD mutations (APP, PSEN1, PSEN2) that universally increase Aβ42 production or the Aβ42:40 ratio, and Down syndrome patients with trisomy 21 (extra APP gene copy) invariably develop AD pathology by age 40. Recent success of lecanemab (CLARITY AD trial, 27% slowing of cognitive decline) and donanemab (TRAILBLAZER-ALZ 2, 35% slowing) in amyloid-clearing antibody trials provide the strongest clinical validation of the hypothesis to date.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["amyloid beta", "tau", "APP mutation", "neurodegeneration", "amyloid cascade"],
+    "expected_answer_keywords": ["amyloid beta", "tau", "APP mutation", "neurodegeneration", "amyloid cascade"]
+  },
+  {
+    "id": "q012",
+    "question": "What are the key molecular mechanisms of insulin resistance in type 2 diabetes?",
+    "ground_truth": "Insulin resistance in T2D involves impaired insulin receptor signaling, primarily through serine phosphorylation of IRS-1 by kinases such as JNK and IKKβ activated by fatty acids and inflammatory cytokines, which prevents normal tyrosine phosphorylation and downstream PI3K-Akt-GLUT4 signaling. Ectopic lipid accumulation in liver and skeletal muscle drives lipotoxicity through ceramide and diacylglycerol intermediates that activate PKC isoforms and inhibit insulin signaling. Mitochondrial dysfunction, endoplasmic reticulum stress, and chronic low-grade inflammation via TNF-α and IL-6 from adipose tissue further perpetuate insulin resistance, with pancreatic beta-cell exhaustion leading to progressive hyperglycemia.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["insulin resistance", "IRS-1", "PI3K-Akt", "lipotoxicity", "beta-cell dysfunction"],
+    "expected_answer_keywords": ["insulin resistance", "IRS-1", "PI3K-Akt", "lipotoxicity", "beta-cell dysfunction"]
+  },
+  {
+    "id": "q013",
+    "question": "What are the cellular and molecular mechanisms driving atherosclerotic plaque formation and instability?",
+    "ground_truth": "Atherosclerosis initiates with endothelial dysfunction triggered by oxidized LDL, hemodynamic shear stress, and cardiovascular risk factors, leading to upregulation of adhesion molecules (VCAM-1, ICAM-1) and monocyte recruitment. Monocytes differentiate into macrophages that engulf oxidized LDL via scavenger receptors to form foam cells, constituting the lipid core of plaques alongside smooth muscle cell migration and proliferation. Plaque instability arises from a thin fibrous cap, large necrotic core, and heightened inflammation with matrix metalloproteinase (MMP) secretion degrading the collagen-rich cap; rupture triggers thrombus formation via tissue factor exposure, the mechanism underlying most acute coronary syndromes.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["atherosclerosis", "foam cell", "oxidized LDL", "endothelial dysfunction", "plaque rupture"],
+    "expected_answer_keywords": ["atherosclerosis", "foam cell", "oxidized LDL", "endothelial dysfunction", "plaque rupture"]
+  },
+  {
+    "id": "q014",
+    "question": "What are the pathophysiological mechanisms underlying COPD, including the roles of emphysema and chronic bronchitis?",
+    "ground_truth": "COPD is characterized by persistent airflow limitation resulting from two overlapping processes: emphysema (destruction of alveolar walls by neutrophil and macrophage-derived proteases, particularly elastase and MMP-12, overwhelming antiprotease defenses including alpha-1 antitrypsin) and chronic bronchitis (mucus hypersecretion and small airway remodeling driven by goblet cell hyperplasia and smooth muscle hypertrophy). Cigarette smoke activates oxidative stress pathways, NF-κB-mediated inflammation, and impairs mucociliary clearance, leading to recurrent bacterial and viral infections that drive exacerbations. Systemic inflammation with elevated CRP, IL-6, and fibrinogen contributes to the cardiovascular comorbidity burden, and lung hyperinflation from air trapping worsens exercise intolerance through diaphragm dysfunction.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["COPD", "emphysema", "protease-antiprotease", "airflow obstruction", "neutrophil inflammation"],
+    "expected_answer_keywords": ["COPD", "emphysema", "protease-antiprotease", "airflow obstruction", "neutrophil inflammation"]
+  },
+  {
+    "id": "q015",
+    "question": "What molecular mechanisms drive HER2-positive breast cancer tumorigenesis and therapeutic resistance?",
+    "ground_truth": "HER2+ breast cancer (approximately 15-20% of cases) is driven by ERBB2 gene amplification, leading to HER2 receptor overexpression and constitutive activation of downstream PI3K/Akt/mTOR and RAS/MAPK signaling pathways that promote proliferation, survival, and invasion. Resistance to trastuzumab arises through multiple mechanisms including truncated p95-HER2 lacking the trastuzumab-binding domain, PTEN loss activating PI3K signaling, PIK3CA mutations, and parallel receptor signaling via IGF-1R or EGFR. The discovery that HER2-low tumors respond to trastuzumab deruxtecan (T-DXd) as shown in the DESTINY-Breast04 trial has expanded the therapeutic landscape beyond traditional HER2-amplified disease.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["HER2", "ERBB2 amplification", "trastuzumab resistance", "PI3K pathway", "breast cancer"],
+    "expected_answer_keywords": ["HER2", "ERBB2 amplification", "trastuzumab resistance", "PI3K pathway", "breast cancer"]
+  },
+  {
+    "id": "q016",
+    "question": "What are the pathogenic mechanisms of non-alcoholic fatty liver disease (NAFLD) progression to steatohepatitis and cirrhosis?",
+    "ground_truth": "NAFLD progression from simple steatosis to NASH involves the 'multiple-hit' hypothesis where initial lipid accumulation (steatosis from insulin resistance-driven excess lipogenesis and impaired VLDL export) sensitizes hepatocytes to secondary insults. Lipotoxicity from free fatty acids and their metabolites (ceramides, lysophosphatidylcholine) activates JNK, ER stress, and mitochondrial dysfunction, triggering hepatocyte apoptosis and necroptosis. Subsequent release of DAMPs activates Kupffer cells and hepatic stellate cells via TLR4/TLR9 signaling, promoting TNF-α, TGF-β, and IL-1β-mediated inflammation and fibrosis; activation of hedgehog and TGF-β pathways drives stellate cell transdifferentiation into myofibroblasts, ultimately causing cirrhosis in approximately 10-20% of NASH patients.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["NAFLD", "NASH", "hepatic steatosis", "lipotoxicity", "hepatic fibrosis"],
+    "expected_answer_keywords": ["NAFLD", "NASH", "hepatic steatosis", "lipotoxicity", "hepatic fibrosis"]
+  },
+  {
+    "id": "q017",
+    "question": "What autoimmune mechanisms underlie rheumatoid arthritis pathogenesis and joint destruction?",
+    "ground_truth": "RA is driven by a breach in immune tolerance, likely initiated in the lungs or periodontium by citrullination of proteins (catalyzed by PAD enzymes) in genetically susceptible HLA-DRB1 'shared epitope' individuals, generating anti-citrullinated protein antibodies (ACPAs) that precede clinical onset by years. In the synovium, activated CD4+ Th17 and Th1 cells, B cells producing rheumatoid factor and ACPAs, and innate immune activation via FcγR and complement drive synovial hyperplasia and pannus formation. IL-6, IL-17, TNF-α, and RANKL from synoviocytes and infiltrating cells promote osteoclast activation causing characteristic periarticular bone erosion, the mechanistic basis for JAK inhibitor and biologic (anti-TNF, anti-IL-6, CTLA4-Ig) efficacy.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["rheumatoid arthritis", "ACPA", "synovitis", "TNF-alpha", "HLA-DRB1"],
+    "expected_answer_keywords": ["rheumatoid arthritis", "ACPA", "synovitis", "TNF-alpha", "HLA-DRB1"]
+  },
+  {
+    "id": "q018",
+    "question": "What are the pathophysiological components linking metabolic syndrome and cardiovascular disease risk?",
+    "ground_truth": "Metabolic syndrome (central obesity, hypertriglyceridemia, low HDL, hypertension, and impaired fasting glucose) clusters due to shared underlying insulin resistance and visceral adiposity, which drive interconnected pathophysiological mechanisms. Visceral adipose tissue secretes pro-inflammatory adipokines (TNF-α, IL-6, resistin) and reduced adiponectin, promoting systemic inflammation, dyslipidemia with small dense LDL particles, endothelial dysfunction, and hepatic glucose overproduction. The ATP III-defined metabolic syndrome confers approximately 2-fold increased CVD risk and 5-fold increased T2D risk, with the IDF/AHA joint statement recognizing that the syndrome's cardiovascular risk exceeds the sum of its individual components, primarily mediated through atherogenic dyslipidemia and prothrombotic/proinflammatory state.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["metabolic syndrome", "insulin resistance", "visceral adiposity", "atherogenic dyslipidemia", "cardiovascular risk"],
+    "expected_answer_keywords": ["metabolic syndrome", "insulin resistance", "visceral adiposity", "atherogenic dyslipidemia", "cardiovascular risk"]
+  },
+  {
+    "id": "q019",
+    "question": "What epigenetic mechanisms drive cancer initiation and progression beyond genetic mutations?",
+    "ground_truth": "Cancer epigenetics involves heritable changes in gene expression without DNA sequence alterations, including aberrant DNA methylation (global hypomethylation enabling chromosomal instability and promoter hypermethylation silencing tumor suppressor genes like CDKN2A, MLH1, and BRCA1), histone modifications (H3K27me3 by PRC2/EZH2 silencing differentiation genes, H3K4me3 activation marks), and non-coding RNA dysregulation. The SWI/SNF chromatin remodeling complex is mutated in approximately 20% of all cancers, underscoring the driver role of epigenetic machinery. These changes are potentially reversible, forming the basis for epigenetic therapies including DNMT inhibitors (azacitidine, decitabine) approved for myelodysplastic syndrome, HDAC inhibitors, and EZH2 inhibitors (tazemetostat) for epithelioid sarcoma and follicular lymphoma.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["epigenetics", "DNA methylation", "histone modification", "tumor suppressor silencing", "EZH2"],
+    "expected_answer_keywords": ["epigenetics", "DNA methylation", "histone modification", "tumor suppressor silencing", "EZH2"]
+  },
+  {
+    "id": "q020",
+    "question": "What is the role of neuroinflammation in Parkinson's disease pathogenesis?",
+    "ground_truth": "Neuroinflammation is increasingly recognized as both a consequence and driver of Parkinson's disease, centered on microglial activation in the substantia nigra responding to alpha-synuclein aggregates (Lewy bodies and neurites). Misfolded alpha-synuclein activates microglia via TLR1/2/4 and NLR receptors, triggering NLRP3 inflammasome assembly, IL-1β secretion, and reactive oxygen species production from NADPH oxidase, creating a self-amplifying neurotoxic cycle. Post-mortem studies and PET imaging with TSPO ligands confirm sustained microglial activation correlating with disease progression; epidemiological data showing reduced PD risk with NSAID use and the presence of elevated pro-inflammatory cytokines (TNF-α, IL-6, IL-1β) in CSF and blood further support neuroinflammation as a therapeutic target.",
+    "category": "disease_mechanisms",
+    "expected_keywords": ["neuroinflammation", "alpha-synuclein", "microglia", "NLRP3 inflammasome", "substantia nigra"],
+    "expected_answer_keywords": ["neuroinflammation", "alpha-synuclein", "microglia", "NLRP3 inflammasome", "substantia nigra"]
+  },
+  {
+    "id": "q021",
+    "question": "What is the diagnostic accuracy of high-sensitivity troponin for acute myocardial infarction in the emergency department?",
+    "ground_truth": "High-sensitivity cardiac troponin (hs-cTn) assays have transformed early MI diagnosis, enabling rule-out/rule-in algorithms at 0 and 1-2 hours rather than the traditional 6-hour serial sampling. The ESC 0h/1h algorithm using hs-cTnI or hs-cTnT achieves sensitivity >98% and negative predictive value >99.5% for NSTEMI, with specificity of approximately 75-80% for rule-in. The APACE and BACC studies validated 0h/1h algorithms with hs-cTnT, demonstrating sensitivity of 98.7% and specificity of 99.6% for the rule-out pathway, enabling safe early discharge of approximately 60% of chest pain patients and significantly reducing length of stay.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["high-sensitivity troponin", "NSTEMI diagnosis", "0h/1h algorithm", "sensitivity", "rule-out"],
+    "expected_answer_keywords": ["high-sensitivity troponin", "NSTEMI diagnosis", "0h/1h algorithm", "sensitivity", "rule-out"]
+  },
+  {
+    "id": "q022",
+    "question": "What is the diagnostic performance of PSA testing for prostate cancer detection, and what are its limitations?",
+    "ground_truth": "PSA (prostate-specific antigen) has a sensitivity of approximately 70-80% and specificity of 60-70% for prostate cancer detection at a threshold of 4 ng/mL, resulting in substantial false-positive rates requiring unnecessary biopsies. The ERSPC (European Randomised Study of Screening for Prostate Cancer) demonstrated a 20% prostate cancer-specific mortality reduction with PSA screening at 13-year follow-up (RR 0.79), but with significant overdiagnosis (approximately 1.28 additional diagnoses per death prevented). Refinements including PSA density, PSA velocity, free-to-total PSA ratio, and multiparametric MRI (sensitivity 85-91%, specificity 74-88% for clinically significant cancer) have improved diagnostic discrimination and reduced unnecessary biopsies by 25-30% in MRI-directed protocols.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["PSA", "prostate cancer screening", "ERSPC", "overdiagnosis", "multiparametric MRI"],
+    "expected_answer_keywords": ["PSA", "prostate cancer screening", "ERSPC", "overdiagnosis", "multiparametric MRI"]
+  },
+  {
+    "id": "q023",
+    "question": "What is the diagnostic accuracy of HbA1c for diagnosing type 2 diabetes compared to fasting plasma glucose?",
+    "ground_truth": "HbA1c at a threshold of ≥6.5% (48 mmol/mol) for diabetes diagnosis demonstrates sensitivity of 44-66% and specificity of 97-99% compared to the fasting plasma glucose (FPG) reference standard, meaning HbA1c alone misses a substantial proportion of cases detected by FPG. A WHO-endorsed systematic review found that using HbA1c ≥6.5% identifies roughly two-thirds of cases detected by FPG ≥7.0 mmol/L, with the two tests agreeing in only about 70-80% of individuals. HbA1c offers advantages of no fasting requirement and greater preanalytical stability, but results are confounded by hemoglobinopathies, hemolytic anemia, iron deficiency, and ethnicity-related differences in glycation, making it less reliable in these populations.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["HbA1c", "diabetes diagnosis", "fasting plasma glucose", "sensitivity specificity", "glycated hemoglobin"],
+    "expected_answer_keywords": ["HbA1c", "diabetes diagnosis", "fasting plasma glucose", "sensitivity specificity", "glycated hemoglobin"]
+  },
+  {
+    "id": "q024",
+    "question": "What is the diagnostic performance of D-dimer testing for pulmonary embolism, and how is it best used clinically?",
+    "ground_truth": "D-dimer testing has high sensitivity (95-98%) but low specificity (40-60%) for pulmonary embolism, making it a valuable rule-out test when combined with pre-test probability assessment. The Wells score and revised Geneva score stratify patients such that a negative D-dimer (<500 µg/L) effectively excludes PE in low-to-intermediate probability patients, with a failure rate of <1% in well-designed studies including the Christopher and PIOPED II studies. Age-adjusted D-dimer thresholds (age × 10 µg/L in patients >50 years) as validated in the ADJUST-PE study increased the proportion of patients in whom PE could be excluded from 6.4% to 30% in older patients without increasing the false-negative rate, improving clinical utility.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["D-dimer", "pulmonary embolism", "Wells score", "ADJUST-PE", "negative predictive value"],
+    "expected_answer_keywords": ["D-dimer", "pulmonary embolism", "Wells score", "ADJUST-PE", "negative predictive value"]
+  },
+  {
+    "id": "q025",
+    "question": "What is the diagnostic accuracy of procalcitonin for bacterial sepsis and its utility in antibiotic stewardship?",
+    "ground_truth": "Procalcitonin (PCT) has meta-analytic sensitivity of 77% and specificity of 79% for bacterial infection causing sepsis, with AUC of approximately 0.85, outperforming CRP and WBC for differentiating bacterial from viral infection in critically ill patients. The PRORATA and SAPS trials demonstrated that PCT-guided antibiotic protocols significantly reduced antibiotic duration by 2-3 days without increasing mortality or organ failure, validating PCT as an antibiotic stewardship tool. A 2012 Cochrane review and subsequent meta-analyses confirmed PCT-guided therapy in lower respiratory tract infections and sepsis reduced antibiotic exposure and improved outcomes, though it performs less reliably in immunocompromised patients or early infection before the PCT rise (6-12 hour lag).",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["procalcitonin", "sepsis diagnosis", "antibiotic stewardship", "bacterial infection", "PRORATA trial"],
+    "expected_answer_keywords": ["procalcitonin", "sepsis diagnosis", "antibiotic stewardship", "bacterial infection", "PRORATA trial"]
+  },
+  {
+    "id": "q026",
+    "question": "What is the diagnostic accuracy of BNP and NT-proBNP for heart failure diagnosis in acute dyspnea?",
+    "ground_truth": "BNP and NT-proBNP are highly accurate biomarkers for heart failure diagnosis in acute dyspnea, with BNP showing sensitivity of 90% and specificity of 76% at a threshold of 100 pg/mL in the landmark Breathing Not Properly (BNP) Multinational Study of 1586 dyspneic patients. The PRIDE study established NT-proBNP thresholds of 450 pg/mL (<50 years), 900 pg/mL (50-75 years), and 1800 pg/mL (>75 years) achieving sensitivity of 90% and specificity of 84% for acute heart failure. Age-adjusted NT-proBNP thresholds outperform clinical judgment alone, and low BNP (<100 pg/mL) or NT-proBNP (<300 pg/mL) reliably excludes heart failure with negative predictive values >98%.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["BNP", "NT-proBNP", "heart failure diagnosis", "acute dyspnea", "natriuretic peptide"],
+    "expected_answer_keywords": ["BNP", "NT-proBNP", "heart failure diagnosis", "acute dyspnea", "natriuretic peptide"]
+  },
+  {
+    "id": "q027",
+    "question": "What is the diagnostic accuracy of CT pulmonary angiography for pulmonary embolism diagnosis?",
+    "ground_truth": "CT pulmonary angiography (CTPA) has become the reference standard for PE diagnosis, with the PIOPED II study reporting overall sensitivity of 83% and specificity of 96% for PE diagnosis, though sensitivity improved to 90% when limited to adequate-quality studies. CTPA achieves near-perfect positive predictive value (>96%) when clinical pre-test probability is high, but PPV falls to 58% in low pre-test probability patients, highlighting the critical role of pre-test stratification. A subsegmental PE detection rate of approximately 9% in modern CTPA raises questions about clinical significance and overdiagnosis, as the PISAPED criteria and multi-detector CT have improved sensitivity but the clinical significance of isolated subsegmental PE remains uncertain, with some guidelines suggesting anticoagulation may be omitted in low-risk subsegmental PE.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["CTPA", "pulmonary embolism", "PIOPED II", "sensitivity specificity", "subsegmental PE"],
+    "expected_answer_keywords": ["CTPA", "pulmonary embolism", "PIOPED II", "sensitivity specificity", "subsegmental PE"]
+  },
+  {
+    "id": "q028",
+    "question": "What is the efficacy and accuracy of colonoscopy for colorectal cancer screening and polyp detection?",
+    "ground_truth": "Colonoscopy is considered the gold standard for colorectal cancer screening, with a meta-analytic miss rate for adenomas of approximately 22% for all adenomas and 6% for advanced adenomas in tandem colonoscopy studies. The NordICC trial (2022, NEJM) provided the first randomized evidence, showing colonoscopy invitation reduced CRC risk by 18% (RR 0.82) and CRC death by 10% in intention-to-screen analysis, lower than observational estimates; per-protocol analysis showed 31% CRC risk reduction among those actually screened. Adenoma detection rate (ADR) is the key quality metric, with each 1% increase in ADR associated with a 3% reduction in post-colonoscopy CRC risk, and target ADR ≥25% in men and ≥15% in women recommended by guidelines.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["colonoscopy", "colorectal cancer screening", "adenoma detection rate", "NordICC trial", "polyp miss rate"],
+    "expected_answer_keywords": ["colonoscopy", "colorectal cancer screening", "adenoma detection rate", "NordICC trial", "polyp miss rate"]
+  },
+  {
+    "id": "q029",
+    "question": "What is the diagnostic accuracy of echocardiography for assessing left ventricular ejection fraction and valvular disease?",
+    "ground_truth": "Transthoracic echocardiography (TTE) is the primary tool for LVEF assessment, with biplane Simpson's method demonstrating good agreement with cardiac MRI (Pearson r 0.78-0.90) but higher variability (±5-10 EF units) due to image quality and geometric assumptions. A systematic review comparing echo with cardiac MRI as reference standard showed mean bias of 3-5% for LVEF with limits of agreement of ±10-15%, with 3D echocardiography reducing variability to ±7-8% EF units. For severe aortic stenosis, Doppler-derived mean gradient >40 mmHg and AVA <1.0 cm² show sensitivity of 85-90% and specificity of 85-95% vs invasive catheterization, while transesophageal echo for mitral regurgitation severity achieves sensitivity/specificity of >90% for severe MR.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["echocardiography", "ejection fraction", "cardiac MRI comparison", "valvular disease", "Doppler"],
+    "expected_answer_keywords": ["echocardiography", "ejection fraction", "cardiac MRI comparison", "valvular disease", "Doppler"]
+  },
+  {
+    "id": "q030",
+    "question": "What is the diagnostic accuracy of PET/CT for staging and response assessment in lymphoma?",
+    "ground_truth": "FDG-PET/CT has transformed lymphoma management, with meta-analytic sensitivity of 95-97% and specificity of 93-100% for initial staging of Hodgkin lymphoma and aggressive B-cell NHL, significantly outperforming CT alone (sensitivity ~86%). The Deauville 5-point scale for interim and end-of-treatment PET response assessment has been validated in RATHL and RESPONSE trials; negative end-of-treatment PET (Deauville 1-3) in DLBCL predicts 2-year PFS of approximately 75% versus 20% for positive PET, guiding consolidation decisions. Interim PET after 2 cycles (iPET2) in Hodgkin lymphoma with negative result (Deauville ≤2) allows treatment de-escalation as shown in RATHL trial, reducing bleomycin toxicity without compromising the 3-year PFS of approximately 84%.",
+    "category": "diagnostic_accuracy",
+    "expected_keywords": ["PET/CT", "lymphoma staging", "Deauville score", "FDG", "RATHL trial"],
+    "expected_answer_keywords": ["PET/CT", "lymphoma staging", "Deauville score", "FDG", "RATHL trial"]
+  },
+  {
+    "id": "q031",
+    "question": "Does PCI provide superiority over optimal medical therapy for stable coronary artery disease in reducing major adverse cardiovascular events?",
+    "ground_truth": "The landmark COURAGE trial (2007, NEJM) demonstrated that PCI added to optimal medical therapy (OMT) did not reduce the risk of death, MI, or other major cardiovascular events compared to OMT alone in stable CAD (19% vs 18.5% over 4.6 years, p=0.62). The ORBITA trial (2017, Lancet) showed PCI did not improve exercise time or angina frequency more than a sham procedure in stable single-vessel CAD. The more recent ISCHEMIA trial (2020, NEJM) confirmed no significant difference in major cardiovascular events between an invasive strategy and conservative OMT (13.3% vs 15.5% at 3.2 years, HR 0.93) but showed modest quality-of-life benefits with PCI in symptomatic patients with angina.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["PCI", "stable CAD", "COURAGE trial", "ISCHEMIA trial", "optimal medical therapy"],
+    "expected_answer_keywords": ["PCI", "stable CAD", "COURAGE trial", "ISCHEMIA trial", "optimal medical therapy"]
+  },
+  {
+    "id": "q032",
+    "question": "Is bariatric surgery superior to intensive lifestyle intervention for achieving T2D remission and long-term weight loss?",
+    "ground_truth": "Bariatric surgery, particularly Roux-en-Y gastric bypass (RYGB) and sleeve gastrectomy, achieves substantially greater T2D remission than lifestyle intervention. The STAMPEDE trial (2012, NEJM) showed 42% T2D remission rate with RYGB vs 12% with intensive medical therapy at 12 months, sustained at 5-year follow-up (NEJM 2017) with 29% remission for RYGB vs 5% for medical therapy. The Swedish Obese Subjects (SOS) study demonstrated bariatric surgery reduced T2D incidence by 78% over 10 years and improved 15-year mortality by 29%; weight loss of 25-35% of initial body weight with surgery versus 5-10% with lifestyle intervention explains the magnitude of metabolic benefit.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["bariatric surgery", "gastric bypass", "T2D remission", "STAMPEDE trial", "weight loss"],
+    "expected_answer_keywords": ["bariatric surgery", "gastric bypass", "T2D remission", "STAMPEDE trial", "weight loss"]
+  },
+  {
+    "id": "q033",
+    "question": "When is CABG superior to PCI for multivessel coronary artery disease, particularly in diabetic patients?",
+    "ground_truth": "CABG is preferred over PCI for multivessel CAD in patients with diabetes, left main disease, and complex three-vessel disease as defined by SYNTAX score. The FREEDOM trial (2012, NEJM) definitively established CABG superiority in diabetic multivessel CAD: CABG reduced the primary composite endpoint of death, nonfatal MI, or nonfatal stroke by 26% at 5 years (18.7% vs 26.6%, p=0.005), primarily through reduction in MI. The SYNTAX trial demonstrated that for patients with high SYNTAX scores (≥33), 4-year major adverse cardiac and cerebrovascular events were 26.8% for PCI vs 13.7% for CABG (p<0.001), while outcomes were comparable for low SYNTAX scores (<22), with PCI offering lower stroke rates but higher repeat revascularization rates.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["CABG", "PCI", "multivessel CAD", "FREEDOM trial", "SYNTAX score"],
+    "expected_answer_keywords": ["CABG", "PCI", "multivessel CAD", "FREEDOM trial", "SYNTAX score"]
+  },
+  {
+    "id": "q034",
+    "question": "What is the comparative efficacy of carotid endarterectomy versus carotid artery stenting for symptomatic carotid stenosis?",
+    "ground_truth": "Carotid endarterectomy (CEA) remains preferred over carotid artery stenting (CAS) for most symptomatic patients, particularly those over 70 years old. The CREST trial (2010, NEJM) comparing CEA vs CAS in symptomatic and asymptomatic stenosis found no significant difference in the primary endpoint (periprocedural stroke, MI, death, or ipsilateral stroke at 4 years: 7.2% CEA vs 6.8% CAS, HR 1.11, p=0.51), but CAS had higher periprocedural stroke rates (4.1% vs 2.3%) while CEA had higher MI rates (2.3% vs 1.1%). The EVA-3S and SPACE trials showed CAS inferior to CEA in symptomatic patients, with the ICSS trial demonstrating higher procedural stroke risk with CAS (5.0% vs 3.4% at 120 days); CAS is preferred in patients with high surgical risk, radiation-induced stenosis, or prior neck surgery.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["carotid endarterectomy", "carotid stenting", "CREST trial", "symptomatic stenosis", "periprocedural stroke"],
+    "expected_answer_keywords": ["carotid endarterectomy", "carotid stenting", "CREST trial", "symptomatic stenosis", "periprocedural stroke"]
+  },
+  {
+    "id": "q035",
+    "question": "What is the evidence on optimal timing of total hip arthroplasty for hip osteoarthritis, and does delay worsen outcomes?",
+    "ground_truth": "Evidence suggests that significant delay in total hip arthroplasty (THA) for severe hip OA is associated with worse postoperative functional outcomes. A systematic review found that prolonged waiting times >6 months were associated with greater postoperative pain and functional limitations. The JCHO study in Ontario demonstrated that patients waiting >6 months had significantly worse WOMAC pain and function scores preoperatively, translating to inferior 1-year postoperative outcomes compared to those treated within 3 months. Patients with severe baseline functional limitation and pain (WOMAC >55/100) benefit most from earlier intervention, while comorbidity optimization and patient-specific factors must balance against delay risks.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["total hip arthroplasty", "hip osteoarthritis", "surgical timing", "WOMAC score", "functional outcomes"],
+    "expected_answer_keywords": ["total hip arthroplasty", "hip osteoarthritis", "surgical timing", "WOMAC score", "functional outcomes"]
+  },
+  {
+    "id": "q036",
+    "question": "Is surgical repair superior to conservative management for full-thickness rotator cuff tears?",
+    "ground_truth": "Evidence comparing surgical repair to conservative management for full-thickness rotator cuff tears shows comparable outcomes at 1-2 years for most patients, with surgery potentially advantageous for younger, active patients or larger tears. The MOON Shoulder Group and multiple RCTs show that 1-year outcomes for pain and function (Constant score, ASES score) are similar between physiotherapy-first and early surgery approaches for degenerative tears in patients >55 years. The FIMPACT randomized trial showed no significant difference in WORC score between surgery and exercise therapy at 2 years for non-traumatic full-thickness tears (56.7 vs 55.5, p=0.93), but re-tear rates after surgical repair are 20-94% depending on tear size and patient age, and up to 40% of conservatively managed patients eventually require surgery.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["rotator cuff repair", "conservative management", "physiotherapy", "full-thickness tear", "ASES score"],
+    "expected_answer_keywords": ["rotator cuff repair", "conservative management", "physiotherapy", "full-thickness tear", "ASES score"]
+  },
+  {
+    "id": "q037",
+    "question": "How does TAVR compare to SAVR for severe aortic stenosis across different surgical risk groups?",
+    "ground_truth": "TAVR has expanded from high-risk to low-risk patients following landmark trials demonstrating non-inferiority or superiority across risk strata. The PARTNER 3 trial (2019, NEJM) showed TAVR superior to SAVR in low-risk patients (STS score <4%): composite death, stroke, or rehospitalization at 1 year was 8.5% for TAVR vs 15.1% for SAVR (HR 0.54, p<0.001), largely driven by reduced rehospitalization. The EVOLUT Low Risk trial confirmed non-inferiority of TAVR at 24 months (5.3% vs 6.7%, p<0.001 for non-inferiority). Concerns about TAVR include higher rates of permanent pacemaker implantation (17-25% vs 6-9% for SAVR) and paravalvular regurgitation, while SAVR durability data beyond 10 years remains superior; TAVR is now the dominant approach for patients >75 years or at elevated surgical risk.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["TAVR", "SAVR", "aortic stenosis", "PARTNER 3 trial", "transcatheter valve"],
+    "expected_answer_keywords": ["TAVR", "SAVR", "aortic stenosis", "PARTNER 3 trial", "transcatheter valve"]
+  },
+  {
+    "id": "q038",
+    "question": "Is laparoscopic appendectomy superior to open appendectomy for acute appendicitis in adults?",
+    "ground_truth": "Laparoscopic appendectomy (LA) has largely replaced open appendectomy (OA) as the standard of care for uncomplicated acute appendicitis, supported by meta-analytic evidence. A Cochrane review (Sauerland et al.) and multiple meta-analyses demonstrate LA reduces wound infection risk by 50% compared to OA (OR 0.43), reduces postoperative pain, and shortens hospital stay by approximately 1 day and return to normal activity by 3-5 days. However, LA is associated with higher rates of intraabdominal abscess (2.4% vs 0.9%, OR 2.48) and longer operating times (10-15 minutes). The APPAC trial also established non-operative antibiotic management as a viable alternative for uncomplicated appendicitis in 73% of patients at 1-year follow-up.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["laparoscopic appendectomy", "open appendectomy", "acute appendicitis", "wound infection", "APPAC trial"],
+    "expected_answer_keywords": ["laparoscopic appendectomy", "open appendectomy", "acute appendicitis", "wound infection", "APPAC trial"]
+  },
+  {
+    "id": "q039",
+    "question": "Is catheter ablation superior to antiarrhythmic drug therapy for atrial fibrillation management?",
+    "ground_truth": "Catheter ablation, primarily pulmonary vein isolation (PVI), demonstrates superiority over antiarrhythmic drugs (AADs) for maintaining sinus rhythm and improving quality of life, particularly in paroxysmal AF. The CABANA trial (2019, JAMA) found no significant difference in the primary ITT endpoint of death, disabling stroke, serious bleeding, or cardiac arrest (8% ablation vs 9.2% AAD, HR 0.86, p=0.30), but per-protocol analysis showed 27% reduction in the primary composite and 48% reduction in AF recurrence with ablation. The CASTLE-AF trial (2018, NEJM) demonstrated catheter ablation in AF with HFrEF reduced all-cause mortality and HF hospitalization by 38% (HR 0.62, p=0.007) compared to conventional drug therapy, establishing a survival benefit in the high-risk HFrEF subgroup.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["catheter ablation", "atrial fibrillation", "CABANA trial", "pulmonary vein isolation", "CASTLE-AF"],
+    "expected_answer_keywords": ["catheter ablation", "atrial fibrillation", "CABANA trial", "pulmonary vein isolation", "CASTLE-AF"]
+  },
+  {
+    "id": "q040",
+    "question": "What is the evidence for watchful waiting versus cholecystectomy for asymptomatic or minimally symptomatic gallstones?",
+    "ground_truth": "Watchful waiting is generally appropriate for truly asymptomatic gallstones given low annual rates of symptom development and complications. A prospective study of 123 asymptomatic gallstone patients found cumulative probability of developing biliary pain was 18% at 10 years and 26% at 15 years, while severe complications (cholecystitis, cholangitis, pancreatitis) occurred in only 3% over 10 years, supporting expectant management. However, once symptomatic, cholecystectomy is preferred over continued conservative management: the Danish Cholecystectomy Study showed 29% of patients managed expectantly after their first biliary colic episode developed serious complications within 10 years compared to 9% undergoing early cholecystectomy; prophylactic cholecystectomy is also warranted in specific high-risk groups including porcelain gallbladder, large gallstones >3cm, and immunocompromised patients.",
+    "category": "surgical_vs_medical",
+    "expected_keywords": ["cholecystectomy", "gallstones", "watchful waiting", "biliary colic", "symptomatic cholelithiasis"],
+    "expected_answer_keywords": ["cholecystectomy", "gallstones", "watchful waiting", "biliary colic", "symptomatic cholelithiasis"]
+  },
+  {
+    "id": "q041",
+    "question": "What is the magnitude and nature of breast cancer risk conferred by pathogenic BRCA1 and BRCA2 variants?",
+    "ground_truth": "BRCA1 and BRCA2 are tumor suppressor genes encoding proteins essential for homologous recombination DNA repair; pathogenic variants lead to genomic instability and dramatically elevated cancer risk. Large prospective studies including the EMBRACE and BRCA1/2 consortium data show BRCA1 variant carriers have a cumulative breast cancer risk of 57-72% by age 80, while BRCA2 carriers have a 40-49% lifetime risk, compared to approximately 12% population risk. BRCA1-associated breast cancers are predominantly triple-negative (ER-/PR-/HER2-), grade 3, and medullary histotype, while BRCA2-associated cancers more closely resemble sporadic cancers; PARP inhibitors (olaparib, niraparib) exploit synthetic lethality in BRCA-deficient tumors and are approved for BRCA-mutated metastatic breast and ovarian cancers.",
+    "category": "gene_disease",
+    "expected_keywords": ["BRCA1", "BRCA2", "breast cancer risk", "homologous recombination", "PARP inhibitor"],
+    "expected_answer_keywords": ["BRCA1", "BRCA2", "breast cancer risk", "homologous recombination", "PARP inhibitor"]
+  },
+  {
+    "id": "q042",
+    "question": "How does the APOE4 allele increase Alzheimer's disease risk and affect disease biology?",
+    "ground_truth": "APOE4 is the strongest genetic risk factor for late-onset Alzheimer's disease: one APOE4 allele increases AD risk approximately 3-4 fold and two alleles increase risk approximately 8-12 fold compared to APOE3/3 homozygotes, with population-attributable risk estimates of approximately 20-30% for sporadic AD. APOE4 accelerates amyloid-beta aggregation and impairs its clearance through reduced binding to LRP1 for transcytosis across the blood-brain barrier, leading to earlier amyloid accumulation by 5-10 years versus APOE3. APOE4 also directly impairs microglial and astrocyte lipid homeostasis, promotes tauopathy propagation, reduces synaptic plasticity, and is associated with a 2-3 year earlier onset; APOE4 homozygotes constitute approximately 2% of the population but represent approximately 15-20% of AD cases, and trials of amyloid-clearing immunotherapy show APOE4 carriers have disproportionately higher ARIA rates.",
+    "category": "gene_disease",
+    "expected_keywords": ["APOE4", "Alzheimer's disease risk", "amyloid clearance", "late-onset dementia", "neurodegeneration"],
+    "expected_answer_keywords": ["APOE4", "Alzheimer's disease risk", "amyloid clearance", "late-onset dementia", "neurodegeneration"]
+  },
+  {
+    "id": "q043",
+    "question": "What is the pharmacogenomic relationship between HLA-B*57:01 and abacavir hypersensitivity reaction?",
+    "ground_truth": "HLA-B*57:01 is a pharmacogenomic biomarker with near-perfect predictive value for abacavir hypersensitivity syndrome (AHS), a potentially life-threatening immune-mediated reaction affecting the skin, GI tract, and respiratory system in approximately 5-8% of untested individuals. The PREDICT-1 trial (2008, NEJM), a prospective randomized study of 1956 HIV-positive patients, demonstrated that HLA-B*57:01 screening reduced immunologically confirmed AHS from 2.7% to 0% (negative predictive value 100%), establishing routine screening as standard of care. Mechanistic studies show the HLA-B*57:01-abacavir complex presents self-peptides to cytotoxic CD8+ T cells, inducing a T-cell-mediated delayed hypersensitivity reaction; 5.6% of White patients carry HLA-B*57:01 versus <1% in Black patients, explaining ethnic variation in hypersensitivity rates.",
+    "category": "gene_disease",
+    "expected_keywords": ["HLA-B*57:01", "abacavir hypersensitivity", "PREDICT-1 trial", "pharmacogenomics", "HIV treatment"],
+    "expected_answer_keywords": ["HLA-B*57:01", "abacavir hypersensitivity", "PREDICT-1 trial", "pharmacogenomics", "HIV treatment"]
+  },
+  {
+    "id": "q044",
+    "question": "How does CYP2C19 genetic variation affect clopidogrel efficacy and clinical outcomes in cardiovascular disease?",
+    "ground_truth": "Clopidogrel requires CYP2C19-mediated bioactivation to its active thiol metabolite; CYP2C19 loss-of-function (LoF) alleles (*2, *3), present in approximately 25-30% of Whites and 40-50% of East Asians, result in reduced active metabolite formation and impaired platelet inhibition. The TRITON-TIMI 38 substudy and PLATO pharmacogenomics analysis demonstrated that CYP2C19 LoF carriers had 53-73% higher rates of major adverse cardiovascular events after ACS compared to non-carriers, including 3-fold increased stent thrombosis risk. The FDA added a boxed warning to clopidogrel in 2010; clinical trials (TAILOR-PCI, POPular Genetics) confirmed that CYP2C19 genotype-guided antiplatelet selection—using ticagrelor or prasugrel in LoF carriers—significantly reduced ischemic events (HR 0.66 in TAILOR-PCI), establishing pharmacogenomic-guided antiplatelet prescribing as evidence-based practice.",
+    "category": "gene_disease",
+    "expected_keywords": ["CYP2C19", "clopidogrel", "loss-of-function allele", "antiplatelet resistance", "TAILOR-PCI"],
+    "expected_answer_keywords": ["CYP2C19", "clopidogrel", "loss-of-function allele", "antiplatelet resistance", "TAILOR-PCI"]
+  },
+  {
+    "id": "q045",
+    "question": "What is the role of PCSK9 in LDL regulation, and what are the cardiovascular outcomes with PCSK9 inhibition?",
+    "ground_truth": "PCSK9 (proprotein convertase subtilisin/kexin type 9) binds to LDL receptors and promotes their lysosomal degradation, reducing hepatic LDL uptake; gain-of-function PCSK9 mutations cause familial hypercholesterolemia with markedly elevated LDL, while loss-of-function variants (1-2% prevalence) are associated with 15-25% lower lifelong LDL and 47-88% lower CHD risk, providing the genetic validation for PCSK9 as a target. The FOURIER trial (2017, NEJM) showed evolocumab added to statin therapy reduced LDL by 59% (from 92 to 30 mg/dL) and the primary MACE endpoint by 15% (HR 0.85, p<0.001) over 2.2 years in 27,564 patients with established CVD. The ODYSSEY OUTCOMES trial demonstrated alirocumab reduced major adverse cardiovascular events by 15% (HR 0.85) and all-cause mortality by 15% in post-ACS patients, with greatest absolute benefit in those with baseline LDL ≥100 mg/dL.",
+    "category": "gene_disease",
+    "expected_keywords": ["PCSK9", "LDL receptor", "FOURIER trial", "evolocumab", "familial hypercholesterolemia"],
+    "expected_answer_keywords": ["PCSK9", "LDL receptor", "FOURIER trial", "evolocumab", "familial hypercholesterolemia"]
+  },
+  {
+    "id": "q046",
+    "question": "How does TP53 mutation status affect cancer prognosis and response to therapy across tumor types?",
+    "ground_truth": "TP53 is the most frequently mutated gene in human cancer (~50% of all cancers), encoding p53, the 'guardian of the genome' that responds to DNA damage by inducing cell cycle arrest, apoptosis, or senescence. TP53 mutations confer adverse prognosis across multiple tumor types: in chronic lymphocytic leukemia (CLL), TP53 deletion/mutation predicts resistance to chemoimmunotherapy (FCR) with median PFS of approximately 12 months versus >60 months in TP53-wildtype, necessitating BCL-2 inhibitors (venetoclax) or BTK inhibitors. In breast cancer, TP53 mutation is enriched in triple-negative subtype and associated with worse overall survival (HR approximately 1.8-2.0); in lung cancer, co-occurring TP53 and KRAS mutations predict resistance to targeted therapies. Novel therapeutic strategies including MDM2 inhibitors (for TP53-wildtype cancers) and mutant p53-reactivating compounds (APR-246/eprenetapopt) are in clinical trials.",
+    "category": "gene_disease",
+    "expected_keywords": ["TP53", "tumor suppressor", "cancer prognosis", "DNA damage response", "p53 mutation"],
+    "expected_answer_keywords": ["TP53", "tumor suppressor", "cancer prognosis", "DNA damage response", "p53 mutation"]
+  },
+  {
+    "id": "q047",
+    "question": "How does EGFR mutation status direct treatment and outcomes in non-small cell lung cancer?",
+    "ground_truth": "Activating EGFR mutations (most commonly exon 19 deletions and L858R point mutation in exon 21, present in ~15% of Western and ~40-50% of Asian NSCLC) predict dramatic sensitivity to EGFR tyrosine kinase inhibitors. The FLAURA trial (2018, NEJM) established osimertinib (third-generation TKI targeting both sensitizing and T790M resistance mutations) as the preferred first-line treatment for EGFR-mutant advanced NSCLC, demonstrating superior median PFS of 18.9 vs 10.2 months versus erlotinib/gefitinib (HR 0.46, p<0.001) and improved OS of 38.6 vs 31.8 months (HR 0.80, p=0.046). EGFR mutations in exon 20 (insertion mutations, ~2% of NSCLC) confer resistance to standard TKIs and are targeted by amivantamab and mobocertinib, while T790M-mediated acquired resistance to 1st/2nd generation TKIs occurs in ~60% of progression cases.",
+    "category": "gene_disease",
+    "expected_keywords": ["EGFR mutation", "NSCLC", "osimertinib", "FLAURA trial", "tyrosine kinase inhibitor"],
+    "expected_answer_keywords": ["EGFR mutation", "NSCLC", "osimertinib", "FLAURA trial", "tyrosine kinase inhibitor"]
+  },
+  {
+    "id": "q048",
+    "question": "What is the significance of KRAS mutations in colorectal cancer for prognosis and treatment selection?",
+    "ground_truth": "KRAS mutations are present in approximately 40-45% of colorectal cancers, primarily at codons 12 and 13, constitutively activating the RAS-MAPK signaling pathway independent of upstream EGFR signaling. KRAS mutation status is the definitive predictive biomarker for anti-EGFR monoclonal antibody (cetuximab, panitumumab) resistance: the CRYSTAL and PRIME trials established that anti-EGFR therapy provides no benefit and may be harmful in KRAS-mutated mCRC (HR for OS approximately 1.0), while conferring significant benefit in KRAS-wildtype patients (20-25% OS improvement). KRAS G12C-specific mutations (~3-4% of CRC) can now be targeted with sotorasib or adagrasib (first KRAS inhibitors), with the CodeBreak 100 trial showing 9.7% ORR for sotorasib in heavily pre-treated KRAS G12C CRC; extended RAS testing (NRAS, HRAS, all codons) is now standard before anti-EGFR therapy.",
+    "category": "gene_disease",
+    "expected_keywords": ["KRAS mutation", "colorectal cancer", "anti-EGFR therapy", "CRYSTAL trial", "KRAS G12C"],
+    "expected_answer_keywords": ["KRAS mutation", "colorectal cancer", "anti-EGFR therapy", "CRYSTAL trial", "KRAS G12C"]
+  },
+  {
+    "id": "q049",
+    "question": "What is the relationship between Factor V Leiden mutation and venous thromboembolism risk?",
+    "ground_truth": "Factor V Leiden (FVL) is the most common inherited thrombophilia in Caucasians (prevalence 3-8%), resulting from a G1691A mutation causing Arg506Gln substitution that renders Factor Va resistant to inactivation by activated protein C (APC resistance). Heterozygous FVL carriers have a 3-8 fold increased risk of VTE compared to non-carriers, while rare homozygous carriers have 50-80 fold increased risk; however, absolute annual VTE risk remains low at approximately 0.5% per year in heterozygotes. The Leiden Thrombophilia Study demonstrated FVL heterozygosity increased thrombosis risk in combination with oral contraceptives by approximately 35-fold (gene-environment interaction) compared to non-carriers not using OCs. Testing for FVL impacts clinical decisions regarding anticoagulation duration after provoked VTE, OCP prescribing in women with family history, and thromboprophylaxis in high-risk situations.",
+    "category": "gene_disease",
+    "expected_keywords": ["Factor V Leiden", "APC resistance", "venous thromboembolism", "inherited thrombophilia", "anticoagulation"],
+    "expected_answer_keywords": ["Factor V Leiden", "APC resistance", "venous thromboembolism", "inherited thrombophilia", "anticoagulation"]
+  },
+  {
+    "id": "q050",
+    "question": "What is the clinical significance of MTHFR gene variants on homocysteine levels and cardiovascular risk?",
+    "ground_truth": "The MTHFR C677T polymorphism (rs1801133) reduces enzyme thermostability and activity by approximately 70% in TT homozygotes (prevalence 10-15% in Caucasians), leading to impaired remethylation of homocysteine and elevated plasma homocysteine particularly when folate status is low. Epidemiological studies show TT homozygotes have approximately 25% higher plasma homocysteine versus CC genotype, and a Mendelian randomization meta-analysis demonstrated MTHFR TT was associated with a modest but significant increase in CHD risk (OR 1.14-1.21), supporting a causal role for homocysteine in cardiovascular disease. However, the critical clinical caveat is that despite homocysteine being a risk factor, multiple large RCTs (HOPE-2, NORVIT, VISP) of B-vitamin supplementation to lower homocysteine did not reduce cardiovascular events, and current guidelines do not recommend routine MTHFR genotyping or homocysteine-lowering for CVD prevention.",
+    "category": "gene_disease",
+    "expected_keywords": ["MTHFR", "homocysteine", "C677T polymorphism", "cardiovascular risk", "folate metabolism"],
+    "expected_answer_keywords": ["MTHFR", "homocysteine", "C677T polymorphism", "cardiovascular risk", "folate metabolism"]
+  }
 ]
