@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 import streamlit as st
 
-# ── Page config  -  must be first Streamlit call ────────────────────────────────
 st.set_page_config(
     page_title="LitLens",
     page_icon="🔬",
@@ -13,11 +12,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown(
     """
     <style>
-    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #1A3A5C;
     }
@@ -27,8 +24,6 @@ st.markdown(
     section[data-testid="stSidebar"] .stRadio label {
         color: #FFFFFF !important;
     }
-
-    /* Primary buttons */
     .stButton > button[kind="primary"] {
         background-color: #117A65;
         border-color: #117A65;
@@ -39,8 +34,6 @@ st.markdown(
         background-color: #0E6655;
         border-color: #0E6655;
     }
-
-    /* MeSH tags */
     .mesh-tag {
         display: inline-block;
         background-color: #D5F5E3;
@@ -51,14 +44,10 @@ st.markdown(
         font-size: 0.75rem;
         font-weight: 500;
     }
-
-    /* Evidence quality badges */
     .badge-strong   { background: #1D8348; color: white; border-radius: 4px; padding: 2px 10px; font-weight: 600; }
     .badge-moderate { background: #D4AC0D; color: white; border-radius: 4px; padding: 2px 10px; font-weight: 600; }
     .badge-mixed    { background: #E67E22; color: white; border-radius: 4px; padding: 2px 10px; font-weight: 600; }
     .badge-weak     { background: #C0392B; color: white; border-radius: 4px; padding: 2px 10px; font-weight: 600; }
-
-    /* Synthesis card */
     .synthesis-box {
         border: 1px solid #117A65;
         border-radius: 8px;
@@ -66,8 +55,11 @@ st.markdown(
         background-color: #F0FBF8;
         margin-bottom: 1rem;
     }
-
-    /* General font */
+    .intent-badge-definitional    { background: #2980B9; color: white; border-radius: 4px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
+    .intent-badge-comparative     { background: #16A085; color: white; border-radius: 4px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
+    .intent-badge-search          { background: #8E44AD; color: white; border-radius: 4px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
+    .intent-badge-mechanistic     { background: #D35400; color: white; border-radius: 4px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
+    .intent-badge-epidemiological { background: #C0392B; color: white; border-radius: 4px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
     html, body, [class*="css"] {
         font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     }
@@ -76,43 +68,43 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+from frontend.components.analytics_dashboard import render_analytics_dashboard
 from frontend.components.contradiction_panel import render_contradiction_panel
 from frontend.components.eval_dashboard import render_eval_dashboard
 from frontend.components.result_card import render_paper_card
 from frontend.components.search_bar import render_search_bar
 from frontend.utils import api_client
 
-
-# ── Sidebar navigation ────────────────────────────────────────────────────────
+# ── Sidebar navigation ─────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## 🔬 LitLens")
     st.markdown("*Biomedical Literature Intelligence*")
     st.divider()
-    page = st.radio("Navigation", ["Search", "Eval Dashboard"], label_visibility="collapsed")
+    page = st.radio(
+        "Navigation",
+        ["Search", "Eval Dashboard", "Analytics"],
+        label_visibility="collapsed",
+    )
     st.divider()
     st.caption("Powered by PubMed · Semantic Scholar · GPT-4o-mini")
 
 
+# ── Helper: intent badge ───────────────────────────────────────────────────────
+def _intent_badge_html(intent: str | None) -> str:
+    if not intent:
+        return ""
+    css_class = f"intent-badge-{intent.lower()}"
+    return f'<span class="{css_class}">{intent.capitalize()}</span>'
+
+
 def _quality_badge(quality: str) -> str:
-    """Return an HTML badge for the given evidence quality level.
-
-    Args:
-        quality: One of 'strong', 'moderate', 'mixed', 'weak'.
-
-    Returns:
-        HTML span with appropriate colour class.
-    """
     label = quality.capitalize()
     css_class = f"badge-{quality.lower()}"
     return f'<span class="{css_class}">{label} Evidence</span>'
 
 
-def render_synthesis_card(synthesis: dict[str, Any]) -> None:
-    """Render the evidence synthesis result card.
-
-    Args:
-        synthesis: Synthesis dict from the API response.
-    """
+def render_synthesis_card(synthesis: dict[str, Any], query_id: str | None = None) -> None:
+    """Render the evidence synthesis result card with feedback buttons."""
     quality = synthesis.get("evidence_quality", "mixed").lower()
     badge_html = _quality_badge(quality)
 
@@ -126,7 +118,9 @@ def render_synthesis_card(synthesis: dict[str, Any]) -> None:
         for finding in findings:
             citations = finding.get("citations", [])
             cite_str = " ".join(f"[{c}]" for c in citations) if citations else ""
-            st.markdown(f"- {finding.get('finding', '')} {cite_str}")
+            conf = finding.get("confidence")
+            conf_str = f" *(confidence: {conf})*" if conf else ""
+            st.markdown(f"- {finding.get('finding', '')} {cite_str}{conf_str}")
 
     gaps = synthesis.get("gaps", [])
     if gaps:
@@ -138,10 +132,37 @@ def render_synthesis_card(synthesis: dict[str, Any]) -> None:
     if limitations:
         st.caption(f"*Limitations: {limitations}*")
 
+    # ── Recommended follow-up searches ────────────────────────────────────────
+    next_searches = synthesis.get("recommended_next_searches", [])
+    if next_searches:
+        st.markdown("**Recommended follow-up searches:**")
+        cols = st.columns(len(next_searches))
+        for i, ns in enumerate(next_searches):
+            if cols[i].button(f"🔍 {ns}", key=f"followup_{i}_{ns[:20]}"):
+                st.session_state["prefill_query"] = ns
+                st.rerun()
+
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # ── Feedback widget ────────────────────────────────────────────────────────
+    if query_id:
+        feedback_key = f"feedback_sent_{query_id}"
+        if st.session_state.get(feedback_key):
+            st.success("Thanks for the feedback!")
+        else:
+            st.markdown("**Was this synthesis helpful?**")
+            fcol1, fcol2, _ = st.columns([1, 1, 6])
+            if fcol1.button("👍 Helpful", key=f"helpful_{query_id}"):
+                api_client.submit_feedback(query_id, rating=5)
+                st.session_state[feedback_key] = True
+                st.rerun()
+            if fcol2.button("👎 Not helpful", key=f"not_helpful_{query_id}"):
+                api_client.submit_feedback(query_id, rating=1)
+                st.session_state[feedback_key] = True
+                st.rerun()
 
-# ── Pages ─────────────────────────────────────────────────────────────────────
+
+# ── Pages ──────────────────────────────────────────────────────────────────────
 if page == "Search":
     st.markdown("# 🔬 LitLens  -  Biomedical Literature Search")
     st.markdown(
@@ -150,15 +171,16 @@ if page == "Search":
     )
     st.divider()
 
-    query, submitted = render_search_bar()
+    # Pre-fill query if a follow-up button was clicked
+    prefill = st.session_state.pop("prefill_query", "")
+    query, submitted = render_search_bar(default_value=prefill)
 
     if submitted and query:
-        progress_bar = st.progress(0, text="Expanding query with MeSH terms…")
+        progress_bar = st.progress(0, text="Classifying query intent…")
         spinner_placeholder = st.empty()
 
         with spinner_placeholder.container():
             with st.spinner("Searching PubMed and Semantic Scholar…"):
-                # Animate progress bar while waiting.
                 for pct in range(0, 80, 5):
                     progress_bar.progress(pct, text="Fetching and processing papers…")
                     time.sleep(0.05)
@@ -178,10 +200,28 @@ if page == "Search":
         if result.get("cached"):
             st.info("⚡ Result from cache  -  no API calls made.")
 
+        # ── Intent badge + routing info ────────────────────────────────────────
+        intent = result.get("intent")
+        if intent:
+            from backend.services.intent_classifier import INTENT_PIPELINE_CONFIG, QueryIntent
+            intent_badge = _intent_badge_html(intent)
+            try:
+                config = INTENT_PIPELINE_CONFIG.get(QueryIntent(intent), {})
+                max_p = config.get("max_papers", 10)
+                style = config.get("synthesis_style", "standard")
+                routing_note = f"Searched for up to {max_p} papers · {style} synthesis"
+            except (ValueError, KeyError):
+                routing_note = ""
+            st.markdown(
+                f"**Query intent:** {intent_badge} &nbsp; <span style='color:#555;font-size:0.9rem'>{routing_note}</span>",
+                unsafe_allow_html=True,
+            )
+
         # ── Synthesis ─────────────────────────────────────────────────────────
         synthesis = result.get("synthesis")
+        query_id = str(result.get("query_id", ""))
         if synthesis:
-            render_synthesis_card(synthesis)
+            render_synthesis_card(synthesis, query_id=query_id or None)
         else:
             st.warning("No synthesis was generated. Review the papers below directly.")
 
@@ -216,3 +256,5 @@ if page == "Search":
 elif page == "Eval Dashboard":
     render_eval_dashboard()
 
+elif page == "Analytics":
+    render_analytics_dashboard()
