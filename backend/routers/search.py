@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import models
+from backend.config import settings
 from backend.database import get_db
 from backend.schemas import (
     ContradictionResponse,
@@ -22,9 +23,9 @@ from backend.services.deduplicator import deduplicate
 from backend.services.embedder import embed_papers, embed_query, retrieve_papers, store_in_faiss
 from backend.services.fetcher import fetch_all
 from backend.services.generator import detect_contradictions, synthesise
+from backend.services.intent_classifier import classify_intent
 from backend.services.query_expansion import expand_query
 from backend.services.reranker import rerank
-from backend.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -32,20 +33,9 @@ router = APIRouter(prefix="/search", tags=["search"])
 
 
 async def _store_papers(papers, session: AsyncSession) -> list[models.Paper]:
-    """Upsert paper records and their embeddings into PostgreSQL.
-
-    Returns the list of ORM Paper models with their database IDs.
-
-    Args:
-        papers: List of (Paper schema, embedding vector) tuples.
-        session: Active async database session.
-
-    Returns:
-        List of persisted ORM Paper objects.
-    """
+    """Upsert paper records and their embeddings into PostgreSQL."""
     orm_papers: list[models.Paper] = []
     for paper, vector in papers:
-        # Try to find existing record by pubmed_id or doi to avoid duplicates.
         existing = None
         if paper.pubmed_id:
             result = await session.execute(
@@ -59,7 +49,6 @@ async def _store_papers(papers, session: AsyncSession) -> list[models.Paper]:
             existing = result.scalar_one_or_none()
 
         if existing:
-            # Update embedding if not yet set.
             if existing.embedding is None:
                 existing.embedding = vector
             orm_papers.append(existing)
@@ -133,6 +122,7 @@ async def search(
             query_id=cached_query.id,
             raw_query=cached_query.raw_query,
             expanded_pubmed_query=cached_query.expanded_query,
+            intent=cached_query.intent,
             papers=[],
             synthesis=synthesis,
             contradictions=contradictions,
@@ -141,6 +131,14 @@ async def search(
             latency_ms=latency_ms,
             cached=True,
         )
+
+    # ── Intent classification ─────────────────────────────────────────────────
+    try:
+        intent_result = await classify_intent(body.query)
+        intent_str = intent_result.intent.value
+    except Exception as exc:
+        logger.warning("intent classification failed", error=str(exc))
+        intent_str = "search"
 
     # ── Query expansion ───────────────────────────────────────────────────────
     try:
@@ -167,6 +165,7 @@ async def search(
             query_id=query_id,
             raw_query=body.query,
             expanded_pubmed_query=expanded.pubmed_query,
+            intent=intent_str,
             papers=[],
             synthesis=None,
             contradictions=[],
@@ -185,7 +184,6 @@ async def search(
     try:
         if settings.use_faiss_fallback:
             await store_in_faiss(papers, vectors)
-            # For FAISS path, rerank directly from fetched papers.
             top_k_papers = papers
         else:
             await _store_papers(list(zip(papers, vectors)), db)
@@ -213,40 +211,44 @@ async def search(
     top_papers = await rerank(body.query, candidate_papers)
 
     # ── Synthesis ─────────────────────────────────────────────────────────────
+    synthesis = None
     try:
-        synthesis = await synthesise(body.query, top_papers)
+        synthesis = await synthesise(body.query, top_papers, intent=intent_str)
     except Exception as exc:
         logger.error("synthesis failed", error=str(exc))
-        synthesis = None
 
     # ── Contradiction detection ───────────────────────────────────────────────
+    contradictions: list[ContradictionResponse] = []
     try:
         contradictions = await detect_contradictions(top_papers)
     except Exception as exc:
         logger.warning("contradiction detection failed", error=str(exc))
-        contradictions = []
 
     # ── Persist query record ──────────────────────────────────────────────────
     import json as _json
 
+    latency_ms = int((time.monotonic() - t_start) * 1000)
+
     query_record = models.Query(
         raw_query=body.query,
         expanded_query=expanded.pubmed_query,
+        intent=intent_str,
         papers_retrieved=len(papers),
+        synthesis_generated=synthesis is not None,
         synthesis=synthesis.model_dump_json() if synthesis else None,
         contradictions=[c.model_dump() for c in contradictions] if contradictions else None,
+        contradictions_found=len(contradictions),
+        latency_ms=latency_ms,
     )
     db.add(query_record)
     await db.flush()
-
-    latency_ms = int((time.monotonic() - t_start) * 1000)
 
     # ── Build response ────────────────────────────────────────────────────────
     paper_responses: list[PaperResponse] = []
     for p in top_papers:
         paper_responses.append(
             PaperResponse(
-                id=uuid.uuid4(),  # placeholder if not stored in DB
+                id=uuid.uuid4(),
                 pubmed_id=p.pubmed_id,
                 s2_id=p.s2_id,
                 doi=p.doi,
@@ -267,6 +269,7 @@ async def search(
         query_id=query_record.id,
         raw_query=body.query,
         expanded_pubmed_query=expanded.pubmed_query,
+        intent=intent_str,
         papers=paper_responses,
         synthesis=synthesis,
         contradictions=contradictions,

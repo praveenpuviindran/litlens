@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from backend.config import settings
 from backend.database import init_db
 from backend.routers import health, papers, search
+from backend.routers.analytics import router as analytics_router
 from backend.services.reranker import warm_reranker
 from backend.utils.logging import configure_logging
 
@@ -27,13 +28,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         faiss_fallback=settings.use_faiss_fallback,
     )
 
-    # Initialise database tables, pgvector extension, and FTS trigger.
     try:
         await init_db()
     except Exception as exc:
         logger.error("database init failed  -  continuing without DB", error=str(exc))
 
-    # Warm the cross-encoder reranker model into memory.
     try:
         await warm_reranker()
     except Exception as exc:
@@ -53,9 +52,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
-# Development: allow all origins.
-# Production: restrict to the deployed Streamlit URL.
 if settings.is_production:
     allowed_origins = [
         "https://litlens-frontend.onrender.com",
@@ -72,13 +68,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Global exception handler ──────────────────────────────────────────────────
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """Catch all unhandled exceptions and return a structured error response.
-
-    Prevents raw 500 tracebacks from being exposed to clients.
-    """
     logger.error(
         "unhandled exception",
         path=request.url.path,
@@ -92,8 +84,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     )
 
 
-# ── Routers ───────────────────────────────────────────────────────────────────
 app.include_router(health.router)
 app.include_router(search.router)
 app.include_router(papers.router)
-
+app.include_router(analytics_router)
