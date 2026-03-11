@@ -1,16 +1,14 @@
 """SQLAlchemy 2.x async engine, session factory, and database initialisation helpers."""
 
 import structlog
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
 
 from backend.config import settings
 
 logger = structlog.get_logger(__name__)
 
-# ── Engine ────────────────────────────────────────────────────────────────────
-# pool_pre_ping ensures stale connections are detected and recycled.
 engine = create_async_engine(
     settings.database_url,
     pool_pre_ping=True,
@@ -19,7 +17,6 @@ engine = create_async_engine(
     echo=settings.environment == "development",
 )
 
-# ── Session factory ───────────────────────────────────────────────────────────
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
@@ -33,7 +30,6 @@ class Base(DeclarativeBase):
     """Declarative base for all ORM models."""
 
 
-# ── Dependency ────────────────────────────────────────────────────────────────
 async def get_db() -> AsyncSession:
     """FastAPI dependency that yields an async database session."""
     async with AsyncSessionLocal() as session:
@@ -45,26 +41,37 @@ async def get_db() -> AsyncSession:
             raise
 
 
-# ── Initialisation ────────────────────────────────────────────────────────────
 async def init_db() -> None:
-    """Create tables, enable pgvector extension, and set up FTS trigger.
+    """Create tables, enable pgvector extension, set up FTS trigger, and run migrations.
 
-    Called once at application startup. Safe to call multiple times  -  all
+    Called once at application startup. Safe to call multiple times — all
     statements use IF NOT EXISTS guards.
     """
-    # Import models so SQLAlchemy registers them before create_all.
     from backend import models  # noqa: F401
 
     async with engine.begin() as conn:
-        # Enable pgvector  -  required before any VECTOR column can be created.
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         logger.info("pgvector extension enabled")
 
-        # Create all tables defined via the ORM.
         await conn.run_sync(Base.metadata.create_all)
         logger.info("database tables created or verified")
 
-        # Full-text search trigger on papers(title, abstract).
+        # ── Forward-compatible column migrations ──────────────────────────────
+        # ALTER TABLE IF NOT EXISTS guards for columns added after initial deploy.
+        migration_statements = [
+            "ALTER TABLE queries ADD COLUMN IF NOT EXISTS intent TEXT",
+            "ALTER TABLE queries ADD COLUMN IF NOT EXISTS synthesis_generated BOOLEAN",
+            "ALTER TABLE queries ADD COLUMN IF NOT EXISTS contradictions_found INTEGER",
+            "ALTER TABLE queries ADD COLUMN IF NOT EXISTS latency_ms INTEGER",
+        ]
+        for stmt in migration_statements:
+            try:
+                await conn.execute(text(stmt))
+            except Exception as exc:
+                logger.warning("migration statement skipped", stmt=stmt[:60], error=str(exc))
+        logger.info("schema migrations applied")
+
+        # ── Full-text search trigger ──────────────────────────────────────────
         await conn.execute(
             text("""
             CREATE OR REPLACE FUNCTION papers_fts_update() RETURNS trigger AS $$

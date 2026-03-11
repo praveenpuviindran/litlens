@@ -13,6 +13,7 @@ from sqlalchemy import (
     TEXT,
     TIMESTAMPTZ,
     Boolean,
+    CheckConstraint,
     ForeignKey,
     Index,
     String,
@@ -45,25 +46,17 @@ class Paper(Base):
     keywords: Mapped[Optional[list[str]]] = mapped_column(ARRAY(TEXT), nullable=True)
     citation_count: Mapped[int] = mapped_column(INTEGER, default=0, nullable=False)
     open_access_url: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
-    # 'pubmed', 'semantic_scholar', or 'both'
     source: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
-    # text-embedding-3-small produces 1536-dimensional vectors
     embedding: Mapped[Optional[list[float]]] = mapped_column(Vector(1536), nullable=True)
     fts_vector: Mapped[Optional[str]] = mapped_column(TSVECTOR, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMPTZ, server_default=text("NOW()"), nullable=False
     )
 
-    # ── Indexes ───────────────────────────────────────────────────────────────
     __table_args__ = (
-        # GIN index for fast full-text search
         Index("ix_papers_fts_vector", "fts_vector", postgresql_using="gin"),
-        # GIN index for MeSH term array containment queries
         Index("ix_papers_mesh_terms", "mesh_terms", postgresql_using="gin"),
-        # B-tree index for year range filters
         Index("ix_papers_publication_year", "publication_year"),
-        # IVFFlat ANN index for vector similarity search (lists=100 is appropriate for
-        # a corpus of ~10k–1M papers; adjust lists= as the table grows)
         Index(
             "ix_papers_embedding_ivfflat",
             "embedding",
@@ -84,16 +77,23 @@ class Query(Base):
     )
     raw_query: Mapped[str] = mapped_column(TEXT, nullable=False)
     expanded_query: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
+    intent: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
     papers_retrieved: Mapped[Optional[int]] = mapped_column(INTEGER, nullable=True)
+    synthesis_generated: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     synthesis: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
     contradictions: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    contradictions_found: Mapped[Optional[int]] = mapped_column(INTEGER, nullable=True)
     faithfulness: Mapped[Optional[float]] = mapped_column(FLOAT, nullable=True)
+    latency_ms: Mapped[Optional[int]] = mapped_column(INTEGER, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMPTZ, server_default=text("NOW()"), nullable=False
     )
 
     contradiction_records: Mapped[list["Contradiction"]] = relationship(
         "Contradiction", back_populates="query", cascade="all, delete-orphan"
+    )
+    feedback_records: Mapped[list["QueryFeedback"]] = relationship(
+        "QueryFeedback", back_populates="query", cascade="all, delete-orphan"
     )
 
 
@@ -130,4 +130,29 @@ class Contradiction(Base):
         Index("ix_contradictions_query_id", "query_id"),
         Index("ix_contradictions_paper_a_id", "paper_a_id"),
         Index("ix_contradictions_paper_b_id", "paper_b_id"),
+    )
+
+
+class QueryFeedback(Base):
+    """Stores user feedback for a search result."""
+
+    __tablename__ = "query_feedback"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    query_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("queries.id"), nullable=False
+    )
+    rating: Mapped[int] = mapped_column(INTEGER, nullable=False)
+    feedback_text: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMPTZ, server_default=text("NOW()"), nullable=False
+    )
+
+    query: Mapped["Query"] = relationship("Query", back_populates="feedback_records")
+
+    __table_args__ = (
+        CheckConstraint("rating BETWEEN 1 AND 5", name="ck_feedback_rating"),
+        Index("ix_query_feedback_query_id", "query_id"),
     )
